@@ -1,6 +1,7 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from 'stripe'
+import razorpay from 'razorpay'
 
 //global variables
 const currency = "INR"
@@ -8,6 +9,14 @@ const deliveryCharge = 10
 
 // gateway intialize
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+const razorpaylnstance = new razorpay({
+  key_id:
+    process.env.RAZORPAY_KEY_ID,
+
+  key_secret: process.
+    env.RAZORPAY_KEY_SECRET,
+})
 //placing order using cod  method
 const placeOrder = async (req, res) => {
   try {
@@ -111,7 +120,7 @@ const verifyStripe = async (req, res) => {
     if (success === "true" || success === true) { // This allows both "true" string or boolean true
       // Update the order to mark payment as successful
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
-      // Clear the user's cart data after successful payment
+    
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
       return res.status(200).json({ success: true, message: "Payment verified and order updated." });
@@ -132,6 +141,42 @@ const verifyStripe = async (req, res) => {
 
 //placing order using razorpay method
 const placeOrderRazorpay = async (req, res) => {
+  try {
+    const { userId, items, amount, address } = req.body;
+    const { origin } = req.headers;
+
+    // Prepare order data
+    const orderData = {
+      userId,
+      items,
+      address,
+      amount,
+      paymentMethod: "Razorpay",
+      payment: false,
+      date: Date.now(),
+    };
+
+    // Save new order to database
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+
+    const options = {
+      amount: amount * 100,
+      currency: currency.toUpperCase(),
+      receipt: newOrder._id.toString()
+    }
+    await razorpayInstance.orders.create(options, (error, order) => {
+      if (error) {
+        console.log(error)
+        return res.json({ success: false, message: error })
+      }
+      res.json({ success: true, order })
+    })
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message })
+
+  }
 
 
 }

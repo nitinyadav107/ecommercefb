@@ -17,10 +17,12 @@ import Verify from './pages/Verify';
 
 const App = () => {
   return (
-    <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
+    <div className='dark:text-white dark:bg-slate-800 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] min-h-screen'>
       <ToastContainer />
       <Navbar />
-      <SearchBar />
+      <div className='block md:hidden'>
+        <SearchBar />
+      </div>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/collection' element={<Collection />} />
@@ -33,7 +35,6 @@ const App = () => {
         <Route path='/order' element={<Order />} />
         <Route path='/verify' element={<Verify />} />
       </Routes>
-      
     </div>
   );
 };

@@ -8,20 +8,17 @@ const BestSeller = () => {
   const [bestSeller, setBestSeller] = useState([]);
 
   useEffect(() => {
-   
-
     if (products && products.length > 0) {
       const bestProduct = products.filter((item) => item.bestseller);
-      
       setBestSeller(bestProduct.slice(0, 5));
     }
   }, [products]);
 
   return (
-    <div className='my-10'>
+    <div className='my-10 dark:text-white dark:bg-slate-800'>
       <div className='text-center text-3xl py-8'>
         <Title text1={'BEST'} text2={'SELLERS'} />
-        <p className='text-center text-gray-500'>
+        <p className='text-center text-gray-500 dark:text-gray-400'>
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas, architecto.
         </p>
       </div>

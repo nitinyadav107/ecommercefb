@@ -19,7 +19,7 @@ const RelatedProduct = ({ category, subCategory }) => {
   }, [products, category, subCategory]);
 
   return (
-    <div className="my-24">
+    <div className="my-20 dark:bg-slate-800 dark:text-white">
       <div className="text-center text-3xl py-2">
         <Title text1={"RELATED"} text2={"PRODUCTS"} />
       </div>

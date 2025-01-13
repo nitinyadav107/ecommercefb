@@ -1,46 +1,44 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const SearchBar = () => {
   const { search, setSearch, showSearch, setShowSearch } = useContext(ShopContext);
-  const [visible,setVisible]=useState(false);
-  const location=useLocation();
+  const [visible, setVisible] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(location.pathname.includes('collection' ) && showSearch){
+  useEffect(() => {
+    if (location.pathname.includes('/') && showSearch) {
       setVisible(true);
-    }
-    else{
+    } else {
       setVisible(false);
     }
-  },[location])
+  }, [location, showSearch]);
 
+  const handleInputChange = (e) => {
+    setSearch(e.target.value);
+    navigate('/collection');
+  };
 
   return showSearch && visible ? (
-    <div className='border-t border-b bg-gray-50'>
-      <div className='flex items-center justify-center p-4'>
-        <div className='relative w-full max-w-md sm:w-96'>
+    <div className='bg-white dark:bg-slate-800'>
+    <div className="flex items-center justify-center p-6 md:p-0">
+        <div className='relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl'>
           <input
             type='text'
-            className='w-full h-10 pr-10 border-2 border-gray-400 rounded-full p-2'
+            className='w-full h-10 pr-10 border border-gray-300 rounded-full p-2 dark:bg-slate-700 dark:text-white dark:border-gray-600'
             placeholder='Search for products'
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleInputChange}
           />
           <img
             src={assets.search_icon}
             alt="search"
-            className='absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50'
+            className='absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50 dark:opacity-75'
           />
         </div>
-        <img
-          src={assets.cross_icon}
-          alt="clear"
-          className='w-6 h-6 ml-3 cursor-pointer opacity-50 hover:opacity-100'
-          onClick={() => setShowSearch(false)}
-        />
       </div>
     </div>
   ) : null;
