@@ -46,6 +46,9 @@ const Navbar = () => {
         LIBAS
       </Link>
 
+
+
+
       <ul className='hidden sm:flex gap-5 text-sm text-gray-700 dark:text-white dark:bg-slate-800 '>
         <NavLink to='/' className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
           <p className='text-black dark:text-white dark:bg-slate-800'>Home</p>
@@ -70,14 +73,17 @@ const Navbar = () => {
 
       <div className='flex items-center gap-6 dark:text-white dark:bg-slate-800'>
         {!showSearch && (
-        
-          <IoSearchOutline size={30} onClick={() => setShowSearch(true)}/>
-          
+
+          <IoSearchOutline size={30} onClick={() => setShowSearch(true)} />
+
         )}
 
         <div className='hidden  md:block'>
           <SearchBar />
         </div>
+       
+
+
 
         <label className="swap swap-rotate dark:text-white dark:bg-slate-800">
           <input
@@ -106,19 +112,20 @@ const Navbar = () => {
         </label>
 
         <div className='group relative dark:text-white dark:bg-slate-800'>
-         
+
           <CgProfile size={30} onClick={() => token ? null : navigate('/login')} />
           {token && <div className='absolute hidden group-hover:block bg-white right-0 pt-4 dark:text-white dark:bg-slate-800'>
             <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded dark:text-white dark:bg-slate-800'>
               <p className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>My Profile</p>
               <p onClick={() => navigate('/order')} className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>Orders</p>
+              
               <p onClick={() => logout()} className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>Logout</p>
             </div>
           </div>}
         </div>
 
         <Link to='/cart' className='relative dark:text-white dark:bg-slate-800'>
-         
+
           <FaShoppingBag size={25} />
           <p className='absolute top-[-10px] right-[-10px] w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center dark:text-white dark:bg-red-500'>
             {getCartCount()}

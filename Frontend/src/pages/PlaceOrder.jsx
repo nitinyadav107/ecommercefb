@@ -20,7 +20,7 @@ const PlaceOrder = () => {
     state: '',
     zipcode: '',
     country: '',
-    
+
     phone: ''
   });
 
@@ -41,7 +41,7 @@ const PlaceOrder = () => {
     event.preventDefault();
     try {
       let orderItems = [];
-  
+
       // Prepare order items
       for (const productId in cartItems) {
         for (const size in cartItems[productId]) {
@@ -55,13 +55,13 @@ const PlaceOrder = () => {
           }
         }
       }
-  
+
       const orderData = {
         address: formData,
         items: orderItems,
         amount: getCartAmount() + delivery_fee
       };
-  
+
       switch (method) {
         case 'cod': {
           const response = await axios.post(`${backendUrl}/api/order/place`, orderData, { headers: { token } });
@@ -74,13 +74,13 @@ const PlaceOrder = () => {
           }
           break;
         }
-  
+
         case 'stripe': {
           try {
             const responseStripe = await axios.post(`${backendUrl}/api/order/stripe`, orderData, {
               headers: { token }
             });
-  
+
             if (responseStripe.data.success) {
               const { session_url } = responseStripe.data;
               window.location.replace(session_url);
@@ -93,13 +93,13 @@ const PlaceOrder = () => {
           }
           break;
         }
-  
+
         case 'razorpay': {
           try {
             const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, {
               headers: { token }
             });
-  
+
             if (responseRazorpay.data.success) {
               // Razorpay transaction successful
               const { session_url } = responseRazorpay.data;
@@ -113,7 +113,7 @@ const PlaceOrder = () => {
           }
           break;
         }
-  
+
         default:
           toast.error('Payment method not supported.');
           break;
@@ -123,7 +123,7 @@ const PlaceOrder = () => {
       toast.error('Failed to place order. Please try again.');
     }
   };
-  
+
 
   return (
     <form onSubmit={onSubmitHandler} className="flex justify-center py-8 bg-gray-50 min-h-screen dark:bg-slate-800">
@@ -147,7 +147,10 @@ const PlaceOrder = () => {
             <input required onChange={onChangeHandler} name="zipcode" value={formData.zipcode} className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 dark:bg-slate-800 dark:border-slate-600 dark:text-white" type="number" placeholder="Pincode" />
             <input required onChange={onChangeHandler} name="country" value={formData.country} className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 dark:bg-slate-800 dark:border-slate-600 dark:text-white" type="text" placeholder="Country" />
           </div>
-          <input required onChange={onChangeHandler} name="phone" value={formData.phone} className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 dark:bg-slate-800 dark:border-slate-600 dark:text-white" type="text" placeholder="Phone" />
+          <div className="flex gap-4 mt-3">
+            <input required onChange={onChangeHandler} name="phone" value={formData.phone} className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 dark:bg-slate-800 dark:border-slate-600 dark:text-white" type="text" placeholder="Phone" />
+          </div>
+
         </div>
 
         {/* Right Section: Cart Total and Payment Method */}

@@ -1,15 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom'; 
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import RelatedProduct from '../components/RelatedProduct';
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const navigate = useNavigate();
+  const { products, currency, addToCart,token } = useContext(ShopContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('');
   const [size, setSize] = useState('');
+  
 
   const fetchProductData = () => {
     products.map((item) => {
@@ -68,7 +70,7 @@ const Product = () => {
               ))}
             </div>
           </div>
-          <button onClick={()=> addToCart(productData._id, size)}
+          <button onClick={()=>token ? addToCart(productData._id, size): navigate('/login')}  
           className='bg-black hover:bg-slate-800 text-white px-8 py-3 text-sm dark:bg-gray-700 dark:text-white  hover:dark:bg-slate-500'>ADD TO CART</button>
           <hr className='mt-8 sm:w-4/5 dark:text-white' />
           <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1 dark:text-gray-400'>

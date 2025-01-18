@@ -15,6 +15,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify';
 
+
 const App = () => {
   return (
     <div className='dark:text-white dark:bg-slate-800 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] min-h-screen'>
@@ -34,6 +35,8 @@ const App = () => {
         <Route path='/place-order' element={<PlaceOrder />} />
         <Route path='/order' element={<Order />} />
         <Route path='/verify' element={<Verify />} />
+       
+        
       </Routes>
     </div>
   );

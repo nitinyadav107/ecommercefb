@@ -1,0 +1,124 @@
+{
+  "countries": [
+    {
+      "country": "United States",
+      "currency": "USD",
+      "symbol": "$"
+    },
+    {
+      "country": "United Kingdom",
+      "currency": "GBP",
+      "symbol": "£"
+    },
+    {
+      "country": "European Union",
+      "currency": "EUR",
+      "symbol": "€"
+    },
+    {
+      "country": "India",
+      "currency": "INR",
+      "symbol": "₹"
+    },
+    {
+      "country": "Japan",
+      "currency": "JPY",
+      "symbol": "¥"
+    },
+    {
+      "country": "China",
+      "currency": "CNY",
+      "symbol": "¥"
+    },
+    {
+      "country": "Canada",
+      "currency": "CAD",
+      "symbol": "$"
+    },
+    {
+      "country": "Australia",
+      "currency": "AUD",
+      "symbol": "$"
+    },
+    {
+      "country": "Russia",
+      "currency": "RUB",
+      "symbol": "₽"
+    },
+    {
+      "country": "South Korea",
+      "currency": "KRW",
+      "symbol": "₩"
+    },
+    {
+      "country": "Mexico",
+      "currency": "MXN",
+      "symbol": "$"
+    },
+    {
+      "country": "Brazil",
+      "currency": "BRL",
+      "symbol": "R$"
+    },
+    {
+      "country": "South Africa",
+      "currency": "ZAR",
+      "symbol": "R"
+    },
+    {
+      "country": "Saudi Arabia",
+      "currency": "SAR",
+      "symbol": "﷼"
+    },
+    {
+      "country": "Turkey",
+      "currency": "TRY",
+      "symbol": "₺"
+    },
+    {
+      "country": "Switzerland",
+      "currency": "CHF",
+      "symbol": "CHF"
+    },
+    {
+      "country": "Sweden",
+      "currency": "SEK",
+      "symbol": "kr"
+    },
+    {
+      "country": "Norway",
+      "currency": "NOK",
+      "symbol": "kr"
+    },
+    {
+      "country": "Denmark",
+      "currency": "DKK",
+      "symbol": "kr"
+    },
+    {
+      "country": "Singapore",
+      "currency": "SGD",
+      "symbol": "$"
+    },
+    {
+      "country": "Malaysia",
+      "currency": "MYR",
+      "symbol": "RM"
+    },
+    {
+      "country": "Thailand",
+      "currency": "THB",
+      "symbol": "฿"
+    },
+    {
+      "country": "Indonesia",
+      "currency": "IDR",
+      "symbol": "Rp"
+    },
+    {
+      "country": "Vietnam",
+      "currency": "VND",
+      "symbol": "₫"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import userModel from "../models/userModel.js";
+import { sendVerificationEamil } from "../middleware/Email.js";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET)
@@ -58,16 +59,20 @@ const registerUser = async (req, res) => {
     //hashing user password
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
+    const verficationToken= Math.floor(100000 + Math.random() * 900000).toString()
 
     const newUser = new userModel({
       name,
       email,
-      password: hashPassword
+      password: hashPassword,
+      verficationToken,
+      verficationTokenExpiresAt:Date.now() + 24 * 60 * 60 * 1000
     })
 
     const user = await newUser.save();
 
     const token = createToken(user._id);
+    await sendVerificationEamil(user.email,verficationToken)
     res.json({ success: true, token });
 
 
@@ -82,6 +87,32 @@ const registerUser = async (req, res) => {
 
 
 }
+const VerfiyEmail=async(req,res)=>{
+  try {
+      const {code}=req.body 
+      const user= await userModel.findOne({
+          verficationToken:code,
+          verficationTokenExpiresAt:{$gt:Date.now()}
+      })
+      if (!user) {
+          return res.status(400).json({success:false,message:"Inavlid or Expired Code"})
+              
+          }
+        
+   user.isVerified=true;
+   user.verficationToken=undefined;
+   user.verficationTokenExpiresAt=undefined;
+   await user.save()
+   await senWelcomeEmail(user.email,user.name)
+   return res.status(200).json({success:true,message:"Email Verifed Successfully"})
+         
+  } catch (error) {
+      console.log(error)
+      return res.status(400).json({success:false,message:"internal server error"})
+  }
+}
+
+
 //Route fo admin login
 
 const adminLogin = async (req, res) => {
@@ -105,4 +136,4 @@ const adminLogin = async (req, res) => {
 }
 
 
-export { loginUser, registerUser, adminLogin };
+export { loginUser, registerUser, adminLogin,  VerfiyEmail };
