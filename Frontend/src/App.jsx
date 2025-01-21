@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Collection from './pages/Collection';
@@ -11,9 +11,10 @@ import PlaceOrder from './pages/PlaceOrder';
 import Order from './pages/Order';
 import Navbar from './components/Navbar';
 import SearchBar from './components/SearchBar';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify';
+import VerifyEmail from './pages/VerifyEmail';
 
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
         <Route path='/place-order' element={<PlaceOrder />} />
         <Route path='/order' element={<Order />} />
         <Route path='/verify' element={<Verify />} />
+        <Route path='/verifyemail' element={<VerifyEmail />} />
        
         
       </Routes>

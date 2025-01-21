@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import RelatedProduct from '../components/RelatedProduct';
+import { toast } from 'react-toastify';
 
 const Product = () => {
   const { productId } = useParams();
@@ -23,6 +24,12 @@ const Product = () => {
       return null; // Ensure every map function returns something.
     });
   };
+  const addtocartAction = () => { 
+    addToCart(productData._id, size)
+    toast("Product added to cart successfully")
+
+  };
+
 
   useEffect(() => {
     fetchProductData();
@@ -70,7 +77,7 @@ const Product = () => {
               ))}
             </div>
           </div>
-          <button onClick={()=>token ? addToCart(productData._id, size): navigate('/login')}  
+          <button onClick={()=>token ? addtocartAction(): navigate('/login')}  
           className='bg-black hover:bg-slate-800 text-white px-8 py-3 text-sm dark:bg-gray-700 dark:text-white  hover:dark:bg-slate-500'>ADD TO CART</button>
           <hr className='mt-8 sm:w-4/5 dark:text-white' />
           <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1 dark:text-gray-400'>

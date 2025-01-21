@@ -2,6 +2,7 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
+import { sendOrderPlacedEmail } from "../middleware/Email.js";
 
 //global variables
 const currency = "INR"
@@ -22,6 +23,12 @@ const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
 
+    // Fetch the user to get the customer name
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
     const orderData = {
       userId,
       items,
@@ -30,16 +37,24 @@ const placeOrder = async (req, res) => {
       paymentMethod: "COD",
       payment: false,
       date: Date.now(),
-    }
+    };
+
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    await userModel.findByIdAndUpdate(userId, { cartData: {} })
+    // Send email with correct data
+    await sendOrderPlacedEmail(user.email, {
+      orderId: newOrder._id,
+      customerName: user.name, // assuming user has a name field
+      date: newOrder.date,
+      amount: newOrder.amount
+    });
 
-    res.json({ success: true, message: "Order Placed Successfully" })
-  }
-  catch (err) {
-    console.log(err)
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+    res.json({ success: true, message: "Order Placed Successfully" });
+  } catch (err) {
+    console.log(err);
     res.json({ success: false, message: err.message });
   }
 }

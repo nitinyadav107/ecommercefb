@@ -66,8 +66,10 @@ const PlaceOrder = () => {
         case 'cod': {
           const response = await axios.post(`${backendUrl}/api/order/place`, orderData, { headers: { token } });
           if (response.data.success) {
+            console.log(orderData);
             localStorage.setItem('orderFormData', JSON.stringify(formData));
             setCartItems({});
+            toast(response.data.message);
             navigate('/order');
           } else {
             toast.error(response.data.message);

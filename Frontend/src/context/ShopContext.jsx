@@ -15,6 +15,7 @@ export const ShopContextProvider = (props) => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState('');
+  const [verifyemail,setVerifyemail]=useState(false);
 
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -154,6 +155,8 @@ export const ShopContextProvider = (props) => {
     backendUrl,
     token,
     setToken,
+    verifyemail,
+    setVerifyemail
   };
 
   return (

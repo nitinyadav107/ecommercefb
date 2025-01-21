@@ -5,9 +5,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const Verify = () => {
-  const { navigate,token, setCartItems, backendUrl } = useContext(ShopContext);
+  const { navigate,token, setCartItems, backendUrl,cartItems } = useContext(ShopContext);
   // const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams,setSearchParams] = useSearchParams();
 
   const success = searchParams.get("success");
   const orderId = searchParams.get("orderId");
@@ -25,8 +25,11 @@ const Verify = () => {
         { headers: { token } }
       );
 
+      console.log(response.data);
+
       if (response.data.success) {
         setCartItems({});
+       
         toast.success("Payment verified successfully!");
         navigate("/order");
       } else {
@@ -41,7 +44,7 @@ const Verify = () => {
 
   useEffect(() => {
     verifyPayment();
-  }, [token]);
+  }, [token ,success]);
 
   return (
     <div className="dark:text-white dark:bg-slate-800 min-h-screen flex items-center justify-center">
