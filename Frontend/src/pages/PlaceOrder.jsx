@@ -36,6 +36,40 @@ const PlaceOrder = () => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
+  const initPay = (order) => {
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'Order Payment',
+      description: 'Order Payment',
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        console.log(response);
+        try {
+          const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
+          if (data.success) {
+            setCartItems({});
+            toast.success(data.message);
+            navigate('/order');
+          }
+
+        }
+        catch (error) {
+          console.log(error);
+          toast.error(error);
+
+        }
+
+      },
+    }
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  }
+
+
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -104,8 +138,9 @@ const PlaceOrder = () => {
 
             if (responseRazorpay.data.success) {
               // Razorpay transaction successful
-              const { session_url } = responseRazorpay.data;
-              window.location.replace(session_url);
+              console.log(responseRazorpay.data.order);
+              initPay(responseRazorpay.data.order)
+
             } else {
               toast.error("Razorpay payment failed. Please try again.");
             }
@@ -128,7 +163,7 @@ const PlaceOrder = () => {
 
 
   return (
-    <form onSubmit={onSubmitHandler} className="flex justify-center py-8 bg-gray-50 min-h-screen dark:bg-slate-800">
+    <form onSubmit={onSubmitHandler} className="flex justify-center py-8 bg-gray-50 min-h-screen dark:bg-slate-800" >
       <div className="flex flex-col lg:flex-row lg:space-x-10 w-full max-w-7xl px-4 sm:px-8">
         {/* Left Section: Delivery Information */}
         <div className="flex flex-col gap-6 w-full lg:w-3/5 p-6 bg-white rounded-lg shadow-md dark:bg-slate-700">
@@ -187,7 +222,7 @@ const PlaceOrder = () => {
           </div>
         </div>
       </div>
-    </form>
+    </form >
   );
 };
 

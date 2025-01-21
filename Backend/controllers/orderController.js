@@ -11,7 +11,7 @@ const deliveryCharge = 10
 // gateway intialize
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-const razorpaylnstance = new razorpay({
+const razorpayInstance = new razorpay({
   key_id:
     process.env.RAZORPAY_KEY_ID,
 
@@ -135,7 +135,7 @@ const verifyStripe = async (req, res) => {
     if (success === "true" || success === true) { // This allows both "true" string or boolean true
       // Update the order to mark payment as successful
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
-    
+
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
       return res.status(200).json({ success: true, message: "Payment verified and order updated." });
@@ -148,7 +148,7 @@ const verifyStripe = async (req, res) => {
   } catch (error) {
     // Log the error for debugging purposes
     console.error("Error in verifyStripe:", error);
-    
+
     // Return an error response with proper status code
     return res.status(500).json({ success: false, message: "An error occurred: " + error.message });
   }
@@ -158,7 +158,7 @@ const verifyStripe = async (req, res) => {
 const placeOrderRazorpay = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
-    const { origin } = req.headers;
+
 
     // Prepare order data
     const orderData = {
@@ -193,6 +193,35 @@ const placeOrderRazorpay = async (req, res) => {
 
   }
 
+
+}
+const verifyRazorpay = async (req, res) => {
+
+  try {
+    const { userId, razorpay_order_id } = req.body;
+    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+    console.log(orderInfo);
+
+    if (orderInfo.status === 'paid') {
+      await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
+      await userModel.findByIdAndUpdate(userId, { cartData: {} });
+      res.json({
+        success: true, message:
+          "Payment Successful"
+      })
+    } else {
+      res.json({
+        success: false, message:
+          'Payment Failed'
+      })
+    }
+
+  }
+
+  catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message })
+  }
 
 }
 //All orders data for admin panel
@@ -237,4 +266,4 @@ const updateStatus = async (req, res) => {
 
 }
 
-export { placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus,verifyStripe }
+export { placeOrder, placeOrderStripe, placeOrderRazorpay, verifyRazorpay, allOrders, userOrders, updateStatus, verifyStripe }
