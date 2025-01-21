@@ -6,7 +6,7 @@ import { sendOrderPlacedEmail } from "../middleware/Email.js";
 
 //global variables
 const currency = "INR"
-const deliveryCharge = 10
+const deliveryCharge = 0
 
 // gateway intialize
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
