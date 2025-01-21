@@ -118,9 +118,8 @@ const PlaceOrder = () => {
             });
 
             if (responseStripe.data.success) {
-              const { session } = responseStripe.data;
-              const stripe = Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
-              stripe.redirectToCheckout({ sessionId: session.id });
+              const { session_url } = responseStripe.data;
+              window.location.replace(session_url);
             } else {
               toast.error(responseStripe.data.message);
             }
