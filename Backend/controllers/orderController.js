@@ -203,14 +203,14 @@ const verifyRazorpay = async (req, res) => {
     console.log(orderInfo);
 
     if (orderInfo.status === 'paid') {
-      await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
+      await orderModel.findByIdAndUpdate(mongoose.Types.ObjectId(orderInfo.receipt), { payment: true });
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
       res.json({
         success: true, message:
           "Payment Successful"
       })
     } else {
-      await orderModel.deleteOne({ _id: orderInfo.receipt });
+      await orderModel.deleteOne({ _id: mongoose.Types.ObjectId(orderInfo.receipt) });
       res.json({
         success: false, message:
           'Payment Failed'
