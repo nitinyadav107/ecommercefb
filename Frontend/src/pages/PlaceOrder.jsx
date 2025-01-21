@@ -110,27 +110,6 @@ const PlaceOrder = () => {
           }
           break;
         }
-
-        case 'stripe': {
-          try {
-            const responseStripe = await axios.post(`${backendUrl}/api/order/stripe`, orderData, {
-              headers: { token }
-            });
-
-            if (responseStripe.data.success) {
-              const { session_url } = responseStripe.data;
-              window.location.replace(session_url);
-              navigate('/verify');
-            } else {
-              toast.error(responseStripe.data.message);
-            }
-          } catch (error) {
-            console.error("Error with Stripe payment request:", error);
-            toast.error("Failed to initiate Stripe payment.");
-          }
-          break;
-        }
-
         case 'razorpay': {
           try {
             const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, {
@@ -199,11 +178,7 @@ const PlaceOrder = () => {
           <div>
             <Title text1={'Payment'} text2={'Method'} />
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              {/* Stripe Payment Option */}
-              <div onClick={() => setMethod('stripe')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
-        ${method === "stripe" ? "bg-slate-300 border-slate-800 shadow-lg" : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600"}`}>
-                <img src={assets.stripe_logo} alt="Stripe Logo" className="h-4 w-auto" />
-              </div>
+          
 
               {/* Razorpay Payment Option */}
               <div onClick={() => setMethod('razorpay')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
