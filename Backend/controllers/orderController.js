@@ -210,7 +210,7 @@ const verifyRazorpay = async (req, res) => {
           "Payment Successful"
       })
     } else {
-      await orderModel.deleteOne({ razorpay_order_id: razorpay_order_id });
+      await orderModel.deleteOne({ _id: orderInfo.receipt });
       res.json({
         success: false, message:
           'Payment Failed'
