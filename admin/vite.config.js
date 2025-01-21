@@ -1,24 +1,18 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-
-
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import cleanPlugin from 'vite-plugin-clean';
 
 export default defineConfig({
-  optimizeDeps: {
-    include: ['react-hot-toast'],
-  },
-  ssr: {
-    noExternal: ['react-hot-toast'],
-  },
-  base: '.',
-  plugins: [react()],
-  server: {
-    port: 5174
-  },
-  build: {
-    rollupOptions: {
-      external: ['react-hot-toast'],
-    },
-  },
+  plugins: [
+    react(),
+    cleanPlugin({
+      targetFiles: ['dist'] // Specify the directories or files to clean
+    })
+  ],
+  resolve: {
+    alias: {
+      'react-router-dom': 'react-router-dom'
+    }
+  }
 });
+
