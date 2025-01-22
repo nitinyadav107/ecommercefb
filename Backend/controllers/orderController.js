@@ -178,52 +178,40 @@ const placeOrderRazorpay = async (req, res) => {
   }
 };
 
+
+
 const verifyRazorpay = async (req, res) => {
   try {
     const { response, orderData } = req.body;
-
-    if (!response || !orderData) {
-      return res.status(400).json({ success: false, message: 'Invalid data provided.' });
-    }
-
-    const { userId, items, amount, address } = orderData;
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({ success: false, message: 'Incomplete payment details.' });
-    }
+    // Verify the signature using Razorpay's utility method
+    const isValid = instance.utils.verifyPaymentSignature({
+      order_id: razorpay_order_id,
+      payment_id: razorpay_payment_id,
+    }, razorpay_signature);
 
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest('hex');
-
-    if (expectedSignature !== razorpay_signature) {
-      const orderDetails = {
-        userId,
-        items,
-        address,
-        amount,
+    if (isValid) {
+      // Proceed with order fulfillment
+      const newOrder = new orderModel({
+        ...orderData,
         paymentMethod: 'Razorpay',
         payment: true,
         date: Date.now(),
-      };
-
-      const newOrder = new orderModel(orderDetails);
+      });
       await newOrder.save();
 
-      await userModel.findByIdAndUpdate(userId, { cartData: {} });
+      await userModel.findByIdAndUpdate(orderData.userId, { cartData: {} });
 
       return res.json({ success: true, message: 'Payment successful.' });
+    } else {
+      return res.json({ success: false, message: 'Payment verification failed.' });
     }
-
-    return res.json({ success: false, message: 'Payment verification failed.' });
   } catch (error) {
     console.error('Error in verifyRazorpay:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 //All orders data for admin panel
 const allOrders = async (req, res) => {

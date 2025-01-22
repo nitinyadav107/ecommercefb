@@ -45,14 +45,18 @@ const PlaceOrder = () => {
       description: 'Order Payment',
       order_id: order.id,
       handler: async (response) => {
-        console.log(response);
         try {
-          // Send response + orderData for verification
+          // Prepare the payload for verification
           const verifyPayload = {
-            response,
+            response: {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
             orderData,
           };
   
+          // Send the payload to the backend for verification
           const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, verifyPayload, {
             headers: { token },
           });
@@ -65,7 +69,7 @@ const PlaceOrder = () => {
             toast.error(data.message);
           }
         } catch (error) {
-          console.log(error);
+          console.error('Error during payment verification:', error);
           toast.error('Payment verification failed.');
         }
       },
@@ -73,6 +77,7 @@ const PlaceOrder = () => {
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
+  
   
   const onSubmitHandler = async (event) => {
     event.preventDefault();
