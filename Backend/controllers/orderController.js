@@ -181,35 +181,38 @@ const placeOrderRazorpay = async (req, res) => {
 const verifyRazorpay = async (req, res) => {
   try {
     const { response, orderData } = req.body;
+    const { userId, items, amount, address } = orderData; 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
 
-    // const crypto = require('crypto');
-    const generated_signature = crypto
+    const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(razorpay_order_id + '|' + razorpay_payment_id)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex');
 
-    if (generated_signature === razorpay_signature) {
-      // Save order to database only if payment is successful
-      const orderDataToSave = {
-        ...orderData,
+    if (expectedSignature === razorpay_signature) {
+      const orderDetails = {
+        userId,
+        items,
+        address,
+        amount,
         paymentMethod: 'Razorpay',
         payment: true,
         date: Date.now(),
       };
 
-      const newOrder = new orderModel(orderDataToSave);
+      const newOrder = new orderModel(orderDetails);
       await newOrder.save();
 
-      await userModel.findByIdAndUpdate(orderData.userId, { cartData: {} });
+      await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
-      res.json({ success: true, message: 'Payment Successful' });
-    } else {
-      res.json({ success: false, message: 'Payment verification failed.' });
-    }
+      return res.json({ success: true, message: 'Payment successful.' });
+    } 
+
+    return res.json({ success: false, message: 'Payment verification failed.' });
+
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error('Error in verifyRazorpay:', error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
