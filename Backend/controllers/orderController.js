@@ -186,7 +186,7 @@ const verifyRazorpay = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
 
     // Verify the signature using Razorpay's utility method
-    const isValid = instance.utils.verifyPaymentSignature({
+    const isValid = razorpayInstance.utils.verifyPaymentSignature({
       order_id: razorpay_order_id,
       payment_id: razorpay_payment_id,
     }, razorpay_signature);
