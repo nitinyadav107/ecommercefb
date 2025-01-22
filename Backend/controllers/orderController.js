@@ -181,8 +181,17 @@ const placeOrderRazorpay = async (req, res) => {
 const verifyRazorpay = async (req, res) => {
   try {
     const { response, orderData } = req.body;
-    const { userId, items, amount, address } = orderData; 
+
+    if (!response || !orderData) {
+      return res.status(400).json({ success: false, message: 'Invalid data provided.' });
+    }
+
+    const { userId, items, amount, address } = orderData;
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ success: false, message: 'Incomplete payment details.' });
+    }
 
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -206,15 +215,15 @@ const verifyRazorpay = async (req, res) => {
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
       return res.json({ success: true, message: 'Payment successful.' });
-    } 
+    }
 
     return res.json({ success: false, message: 'Payment verification failed.' });
-
   } catch (error) {
     console.error('Error in verifyRazorpay:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 //All orders data for admin panel
 const allOrders = async (req, res) => {
