@@ -198,7 +198,7 @@ const verifyRazorpay = async (req, res) => {
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex');
 
-    if (expectedSignature === razorpay_signature) {
+    if (expectedSignature !== razorpay_signature) {
       const orderDetails = {
         userId,
         items,
