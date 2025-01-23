@@ -209,7 +209,9 @@ const verifyRazorpay = async (req, res) => {
         success: true, message:
           "Payment Successful"
       })
-    } else {
+    }
+    else {
+      await orderModel.findByIdAndDelete(orderInfo.receipt===_id.toString());
       res.json({
         success: false, message:
           'Payment Failed'

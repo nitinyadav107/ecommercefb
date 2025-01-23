@@ -55,6 +55,9 @@ const PlaceOrder = () => {
             toast.success(data.message);
             navigate('/order');
           }
+          else{
+            toast.error(data.message);
+          }
 
         }
         catch (error) {
