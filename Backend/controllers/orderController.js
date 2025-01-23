@@ -3,7 +3,6 @@ import userModel from "../models/userModel.js";
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
 import { sendOrderPlacedEmail } from "../middleware/Email.js";
-import crypto from 'crypto'
 
 //global variables
 const currency = "INR"
@@ -158,71 +157,73 @@ const verifyStripe = async (req, res) => {
 //placing order using razorpay method
 const placeOrderRazorpay = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { userId, items, amount, address } = req.body;
 
-    const options = {
-      amount: amount * 100, // Razorpay requires amount in paise
-      currency: 'INR',
+
+    // Prepare order data
+    const orderData = {
+      userId,
+      items,
+      address,
+      amount,
+      paymentMethod: "Razorpay",
+      payment: false,
+      date: Date.now(),
     };
 
-    const order = await razorpayInstance.orders.create(options);
+    // Save new order to database
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
 
-    if (!order) {
-      return res.status(500).json({ success: false, message: 'Failed to create Razorpay order.' });
+    const options = {
+      amount: amount * 100,
+      currency: currency.toUpperCase(),
+      receipt: newOrder._id.toString()
     }
-
-    res.status(200).json({
-      success: true,
-      order
-    });
+    await razorpayInstance.orders.create(options, (error, order) => {
+      if (error) {
+        console.log(error)
+        return res.json({ success: false, message: error })
+      }
+      res.json({ success: true, order })
+    })
   } catch (error) {
-    console.error('Error in Razorpay order creation:', error);
-    res.status(500).json({ success: false, message: error.message });
+    console.log(error);
+    res.json({ success: false, message: error.message })
+
   }
-};
 
 
-
-
-
+}
 const verifyRazorpay = async (req, res) => {
+
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body.response;
-    const { orderData } = req.body;
+    const { userId, razorpay_order_id } = req.body;
+    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+    console.log(orderInfo);
 
-    const generatedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest('hex');
-
-    // Verify the signature
-    if (generatedSignature === razorpay_signature) {
-      console.log('Request is legitimate. Payment verified.');
-
-      // Save order to database
-      const newOrder = new orderModel({
-        ...orderData,
-        paymentMethod: 'Razorpay',
-        payment: true,
-        date: Date.now(),
-      });
-      await newOrder.save();
-
-      // Clear the user's cart
-      await userModel.findByIdAndUpdate(orderData.userId, { cartData: {} });
-
-      return res.status(200).json({ status: 'ok', message: 'Payment successful.' });
+    if (orderInfo.status === 'paid') {
+      await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
+      await userModel.findByIdAndUpdate(userId, { cartData: {} });
+      res.json({
+        success: true, message:
+          "Payment Successful"
+      })
     } else {
-      console.log('Invalid signature. Payment verification failed.');
-      return res.status(400).json({ status: 'error', message: 'Invalid signature.' });
+      res.json({
+        success: false, message:
+          'Payment Failed'
+      })
     }
-  } catch (error) {
-    console.error('Error in verifyRazorpay:', error);
-    return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+
   }
-};
 
+  catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message })
+  }
 
+}
 //All orders data for admin panel
 const allOrders = async (req, res) => {
   try {

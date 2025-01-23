@@ -1,5 +1,5 @@
 
-import  { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
 import { assets } from '../assets/assets';
@@ -36,54 +36,46 @@ const PlaceOrder = () => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
-  const initPay = (order, orderData) => {
+  const initPay = (order) => {
+
     const options = {
-      key: import.meta.env.RAZORPAY_KEY_ID,
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: order.currency,
       name: 'Order Payment',
       description: 'Order Payment',
       order_id: order.id,
+      receipt: order.receipt,
       handler: async (response) => {
+        console.log(response);
         try {
-          // Prepare the payload for verification
-          const verifyPayload = {
-            response: {
-              razorpay_order_id: response.order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            },
-            orderData,
-          };
-  
-          // Send the payload to the backend for verification
-          const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, verifyPayload, {
-            headers: { token },
-          });
-  
+          const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
           if (data.success) {
             setCartItems({});
             toast.success(data.message);
             navigate('/order');
-          } else {
-            toast.error(data.message);
           }
-        } catch (error) {
-          console.error('Error during payment verification:', error);
-          toast.error('Payment verification failed.');
+
         }
+        catch (error) {
+          console.log(error);
+          toast.error(error);
+
+        }
+
       },
-    };
+    }
     const rzp = new window.Razorpay(options);
     rzp.open();
-  };
-  
-  
+  }
+
+
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     try {
       let orderItems = [];
-  
+
       // Prepare order items
       for (const productId in cartItems) {
         for (const size in cartItems[productId]) {
@@ -97,13 +89,13 @@ const PlaceOrder = () => {
           }
         }
       }
-  
+
       const orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee,
+        amount: getCartAmount() + delivery_fee
       };
-  
+
       switch (method) {
         case 'cod': {
           const response = await axios.post(`${backendUrl}/api/order/place`, orderData, { headers: { token } });
@@ -118,26 +110,47 @@ const PlaceOrder = () => {
           }
           break;
         }
-        case 'razorpay': {
+
+        case 'stripe': {
           try {
-            // Send order data to create Razorpay order
-            const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, {
-              headers: { token },
+            const responseStripe = await axios.post(`${backendUrl}/api/order/stripe`, orderData, {
+              headers: { token }
             });
-  
-            if (responseRazorpay.data.success) {
-              console.log(responseRazorpay.data.order);
-              initPay(responseRazorpay.data.order, orderData);
+
+            if (responseStripe.data.success) {
+              const { session_url } = responseStripe.data;
+              window.location.replace(session_url);
             } else {
-              toast.error('Failed to create Razorpay order.');
+              toast.error(responseStripe.data.message);
             }
           } catch (error) {
-            console.error('Error with Razorpay payment request:', error);
-            toast.error('Failed to initiate Razorpay payment.');
+            console.error("Error with Stripe payment request:", error);
+            toast.error("Failed to initiate Stripe payment.");
           }
           break;
         }
-  
+
+        case 'razorpay': {
+          try {
+            const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, {
+              headers: { token }
+            });
+
+            if (responseRazorpay.data.success) {
+              // Razorpay transaction successful
+              console.log(responseRazorpay.data.order);
+              initPay(responseRazorpay.data.order)
+
+            } else {
+              toast.error("Razorpay payment failed. Please try again.");
+            }
+          } catch (error) {
+            console.error("Error with Razorpay payment request:", error);
+            toast.error("Failed to initiate Razorpay payment.");
+          }
+          break;
+        }
+
         default:
           toast.error('Payment method not supported.');
           break;
@@ -147,7 +160,6 @@ const PlaceOrder = () => {
       toast.error('Failed to place order. Please try again.');
     }
   };
-  
 
 
   return (
@@ -186,7 +198,11 @@ const PlaceOrder = () => {
           <div>
             <Title text1={'Payment'} text2={'Method'} />
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-          
+              {/* Stripe Payment Option */}
+              <div onClick={() => setMethod('stripe')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
+        ${method === "stripe" ? "bg-slate-300 border-slate-800 shadow-lg" : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600"}`}>
+                <img src={assets.stripe_logo} alt="Stripe Logo" className="h-4 w-auto" />
+              </div>
 
               {/* Razorpay Payment Option */}
               <div onClick={() => setMethod('razorpay')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
