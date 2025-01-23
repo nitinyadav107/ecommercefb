@@ -171,7 +171,10 @@ const placeOrderRazorpay = async (req, res) => {
       return res.status(500).json({ success: false, message: 'Failed to create Razorpay order.' });
     }
 
-    res.status(200).json({ success: true, order });
+    res.status(200).json({
+      success: true,
+      order
+    });
   } catch (error) {
     console.error('Error in Razorpay order creation:', error);
     res.status(500).json({ success: false, message: error.message });
@@ -184,15 +187,19 @@ const placeOrderRazorpay = async (req, res) => {
 
 const verifyRazorpay = async (req, res) => {
   try {
-    const { response, orderData } = req.body;
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body.response;
+    const { orderData } = req.body;
 
     const generatedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex');
 
+    // Verify the signature
     if (generatedSignature === razorpay_signature) {
+      console.log('Request is legitimate. Payment verified.');
+
+      // Save order to database
       const newOrder = new orderModel({
         ...orderData,
         paymentMethod: 'Razorpay',
@@ -201,15 +208,17 @@ const verifyRazorpay = async (req, res) => {
       });
       await newOrder.save();
 
+      // Clear the user's cart
       await userModel.findByIdAndUpdate(orderData.userId, { cartData: {} });
 
-      return res.status(200).json({ success: true, message: 'Payment successful.' });
+      return res.status(200).json({ status: 'ok', message: 'Payment successful.' });
     } else {
-      return res.status(400).json({ success: false, message: 'Payment verification failed.' });
+      console.log('Invalid signature. Payment verification failed.');
+      return res.status(400).json({ status: 'error', message: 'Invalid signature.' });
     }
   } catch (error) {
     console.error('Error in verifyRazorpay:', error);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ status: 'error', message: 'Internal server error.' });
   }
 };
 
