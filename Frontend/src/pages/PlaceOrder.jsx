@@ -46,17 +46,17 @@ const PlaceOrder = () => {
       order_id: order.id,
       handler: async (response) => {
         try {
-          // Prepare the payload for verification
+          // Payload for verification
           const verifyPayload = {
             response: {
-              razorpay_order_id: response.razorpay_order_id,
+              razorpay_order_id: response.razorpay_order_id, // Correct key name
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             },
             orderData,
           };
   
-          // Send the payload to the backend for verification
+          // Backend verification
           const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, verifyPayload, {
             headers: { token },
           });
@@ -69,34 +69,32 @@ const PlaceOrder = () => {
             toast.error(data.message);
           }
         } catch (error) {
-          console.error('Error during payment verification:', error);
-          toast.error('Payment verification failed.');
+          console.error('Payment verification failed:', error);
+          toast.error('Payment verification failed. Please try again.');
         }
       },
+      prefill: {
+        name: formData.name || 'Customer', // Ensure formData is defined
+        email: formData.email || 'customer@example.com',
+      },
+      theme: { color: '#F37254' },
     };
+  
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
   
-  
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-    try {
-      let orderItems = [];
   
-      // Prepare order items
-      for (const productId in cartItems) {
-        for (const size in cartItems[productId]) {
-          if (cartItems[productId][size] > 0) {
-            const itemInfo = JSON.parse(JSON.stringify(products.find(product => product._id === productId)));
-            if (itemInfo) {
-              itemInfo.quantity = cartItems[productId][size];
-              itemInfo.size = size;
-              orderItems.push(itemInfo);
-            }
-          }
-        }
-      }
+    try {
+      const orderItems = Object.entries(cartItems).flatMap(([productId, sizes]) =>
+        Object.entries(sizes).map(([size, quantity]) => ({
+          ...products.find((product) => product._id === productId),
+          size,
+          quantity,
+        }))
+      );
   
       const orderData = {
         address: formData,
@@ -104,47 +102,34 @@ const PlaceOrder = () => {
         amount: getCartAmount() + delivery_fee,
       };
   
-      switch (method) {
-        case 'cod': {
-          const response = await axios.post(`${backendUrl}/api/order/place`, orderData, { headers: { token } });
-          if (response.data.success) {
-            console.log(orderData);
-            localStorage.setItem('orderFormData', JSON.stringify(formData));
-            setCartItems({});
-            toast(response.data.message);
-            navigate('/order');
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
-        }
-        case 'razorpay': {
-          try {
-            // Send order data to create Razorpay order
-            const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, {
-              headers: { token },
-            });
+      if (method === 'razorpay') {
+        const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, {
+          headers: { token },
+        });
   
-            if (responseRazorpay.data.success) {
-              console.log(responseRazorpay.data.order);
-              initPay(responseRazorpay.data.order, orderData);
-            } else {
-              toast.error('Failed to create Razorpay order.');
-            }
-          } catch (error) {
-            console.error('Error with Razorpay payment request:', error);
-            toast.error('Failed to initiate Razorpay payment.');
-          }
-          break;
+        if (responseRazorpay.data.success) {
+          initPay(responseRazorpay.data.order, orderData);
+        } else {
+          toast.error('Failed to create Razorpay order.');
         }
+      } else if (method === 'cod') {
+        const response = await axios.post(`${backendUrl}/api/order/place`, orderData, {
+          headers: { token },
+        });
   
-        default:
-          toast.error('Payment method not supported.');
-          break;
+        if (response.data.success) {
+          setCartItems({});
+          toast.success(response.data.message);
+          navigate('/order');
+        } else {
+          toast.error(response.data.message);
+        }
+      } else {
+        toast.error('Unsupported payment method.');
       }
     } catch (error) {
-      console.error(error);
-      toast.error('Failed to place order. Please try again.');
+      console.error('Order submission failed:', error);
+      toast.error('Failed to place order.');
     }
   };
   

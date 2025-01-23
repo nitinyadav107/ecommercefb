@@ -158,25 +158,27 @@ const verifyStripe = async (req, res) => {
 //placing order using razorpay method
 const placeOrderRazorpay = async (req, res) => {
   try {
-    const { amount } = req.body; // Only amount required for Razorpay order
+    const { amount } = req.body;
 
     const options = {
-      amount: amount * 100,
+      amount: amount * 100, // Razorpay requires amount in paise
       currency: 'INR',
     };
 
-    razorpayInstance.orders.create(options, (error, order) => {
-      if (error) {
-        console.log(error);
-        return res.json({ success: false, message: 'Failed to create Razorpay order.' });
-      }
-      res.json({ success: true, order });
-    });
+    const order = await razorpayInstance.orders.create(options);
+
+    if (!order) {
+      return res.status(500).json({ success: false, message: 'Failed to create Razorpay order.' });
+    }
+
+    res.status(200).json({ success: true, order });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error('Error in Razorpay order creation:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
 
 
 
@@ -185,14 +187,12 @@ const verifyRazorpay = async (req, res) => {
     const { response, orderData } = req.body;
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
 
-    // Verify the signature using Razorpay's utility method
-    const isValid = razorpayInstance.utils.verifyPaymentSignature({
-      order_id: razorpay_order_id,
-      payment_id: razorpay_payment_id,
-    }, razorpay_signature);
+    const generatedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest('hex');
 
-    if (isValid) {
-      // Proceed with order fulfillment
+    if (generatedSignature === razorpay_signature) {
       const newOrder = new orderModel({
         ...orderData,
         paymentMethod: 'Razorpay',
@@ -203,15 +203,16 @@ const verifyRazorpay = async (req, res) => {
 
       await userModel.findByIdAndUpdate(orderData.userId, { cartData: {} });
 
-      return res.json({ success: true, message: 'Payment successful.' });
+      return res.status(200).json({ success: true, message: 'Payment successful.' });
     } else {
-      return res.json({ success: false, message: 'Payment verification failed.' });
+      return res.status(400).json({ success: false, message: 'Payment verification failed.' });
     }
   } catch (error) {
     console.error('Error in verifyRazorpay:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 //All orders data for admin panel
 const allOrders = async (req, res) => {
