@@ -47,15 +47,17 @@ const PlaceOrder = () => {
       order_id: order.id,
       receipt: order.receipt,
       handler: async (response) => {
-        console.log(response);
+        console.log(response+"handler");
         try {
           const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
           if (data.success) {
+            console.log(data.success+"verify checker")
             setCartItems({});
             toast.success(data.message);
             navigate('/order');
           }
           else{
+            console.log(data.success+"verify checker false")
             toast.error(data.message);
           }
 
