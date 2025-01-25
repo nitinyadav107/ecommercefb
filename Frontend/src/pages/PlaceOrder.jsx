@@ -56,10 +56,7 @@ const PlaceOrder = () => {
             toast.success(data.message);
             navigate('/order');
           }
-          else{
-            console.log(data.success+"verify checker false")
-            toast.error(data.message);
-          }
+        
 
         }
         catch (error) {
