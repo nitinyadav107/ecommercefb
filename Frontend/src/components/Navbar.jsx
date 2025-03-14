@@ -55,10 +55,7 @@ const Navbar = () => {
           <p className='text-black dark:text-white dark:bg-slate-800'>Home</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden dark:bg-slate-800' />
         </NavLink>
-        <NavLink to='/' className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
-          <p className='text-black dark:text-white dark:bg-slate-800'>Home</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden dark:bg-slate-800' />
-        </NavLink>
+        
 
         <NavLink to='/collection' className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
           <p className='text-black dark:text-white dark:bg-slate-800'>Collection</p>
