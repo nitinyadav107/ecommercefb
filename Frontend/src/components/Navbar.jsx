@@ -62,12 +62,12 @@ const Navbar = () => {
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden dark:bg-slate-800' />
         </NavLink>
 
-        <NavLink to='/about' className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
+        <NavLink to='/about' onClick={() => setShowSearch(false)}  className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
           <p className='text-black dark:text-white dark:bg-slate-800'>About</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden dark:bg-slate-800' />
         </NavLink>
 
-        <NavLink to='/contact' className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
+        <NavLink to='/contact' onClick={() => setShowSearch(false)}  className='flex flex-col items-center gap-1 dark:text-white dark:bg-slate-800'>
           <p className='text-black dark:text-white dark:bg-slate-800'>Contact</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden dark:bg-slate-800' />
         </NavLink>
@@ -79,7 +79,7 @@ const Navbar = () => {
           <IoSearchOutline size={30} onClick={() => setShowSearch(true)} />
 
         )}
-
+       
         <div className='hidden  md:block'>
           <SearchBar />
         </div>
@@ -113,7 +113,7 @@ const Navbar = () => {
           )}
         </label>
 
-        <div className='group relative dark:text-white dark:bg-slate-800'>
+        <div className='group relative dark:text-white dark:bg-slate-800 z-10'>
 
           <CgProfile size={30} onClick={() => token ? null : navigate('/login')} />
           {token && <div className='absolute hidden group-hover:block bg-white right-0 pt-4 dark:text-white dark:bg-slate-800'>
@@ -126,7 +126,7 @@ const Navbar = () => {
           </div>}
         </div>
 
-        <Link to='/cart' className='relative dark:text-white dark:bg-slate-800'>
+        <Link to='/cart' onClick={() => setShowSearch(false)} className='relative dark:text-white dark:bg-slate-800'>
 
           <FaShoppingBag size={25} />
           <p className='absolute top-[-10px] right-[-10px] w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center dark:text-white dark:bg-red-500'>
@@ -138,7 +138,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'} dark:text-white dark:bg-slate-800`}>
+      <div className={`absolute top-0 right-0 bottom-0 overflow-hidden z-10 bg-white transition-all ${visible ? 'w-full' : 'w-0'} dark:text-white dark:bg-slate-800`}>
         <div className='flex flex-col text-gray-600 dark:text-white dark:bg-slate-800'>
           <div onClick={() => setVisible(!visible)} className='flex items-center gap-4 p-3 dark:text-white dark:bg-slate-800'>
             <img src={assets.dropdown_icon} className='h-4 rotate-180 dark:text-white dark:bg-slate-800' alt="Back Icon" />
@@ -146,8 +146,8 @@ const Navbar = () => {
           </div>
           <NavLink onClick={() => setVisible(!visible)} className='py-2 pl-6 border dark:text-white dark:bg-slate-800' to='/'>Home</NavLink>
           <NavLink onClick={() => setVisible(!visible)} className='py-2 pl-6 border dark:text-white dark:bg-slate-800' to='/collection'>Collection</NavLink>
-          <NavLink onClick={() => setVisible(!visible)} className='py-2 pl-6 border dark:text-white dark:bg-slate-800' to='/about'>About</NavLink>
-          <NavLink onClick={() => setVisible(!visible)} className='py-2 pl-6 border dark:text-white dark:bg-slate-800' to='/contact'>Contact</NavLink>
+          <NavLink onClick={() => {setVisible(!visible)  , setShowSearch(false)}}  className='py-2 pl-6 border dark:text-white dark:bg-slate-800' to='/about'>About</NavLink>
+          <NavLink onClick={() => {setVisible(!visible)  , setShowSearch(false)}} className='py-2 pl-6 border dark:text-white dark:bg-slate-800' to='/contact'>Contact</NavLink>
         </div>
       </div>
     </div>
