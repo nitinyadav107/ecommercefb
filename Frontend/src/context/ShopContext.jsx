@@ -9,10 +9,10 @@ export const ShopContext = createContext();
 export const ShopContextProvider = (props) => {
   const currency = '₹ ';
   const delivery_fee = 0;
-  console.log(import.meta.env);
+  // console.log(import.meta.env);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  console.log(backendUrl)
+  // console.log(backendUrl)
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});

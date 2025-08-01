@@ -36,7 +36,8 @@ const Product = () => {
   }, [productId, products]);
 
   return productData ? (
-    <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100 mb-5 dark:text-white dark:bg-slate-800'>
+    <div className='dark:text-white dark:bg-slate-800 '>
+      <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100 mb-5 dark:text-white dark:bg-slate-800'>
       <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
         <div className='flex-1 flex flex-col gap-3 sm:flex-row'> {/* Use flex-row for horizontal layout */}
           {/* Image Thumbnails */}
@@ -101,6 +102,8 @@ const Product = () => {
       {/* display related products */}
       <RelatedProduct category={productData.category} subCategory={productData.subCategory} />
     </div>
+    </div>
+    
   ) : (
     <div className='opacity-0 dark:text-white dark:bg-slate-800'></div>
   );

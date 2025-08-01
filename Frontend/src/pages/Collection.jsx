@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import ProductItem from '../components/ProductItem';
 import Title from '../components/Title';
+import { ShopContext } from '../context/ShopContext';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -13,7 +14,7 @@ const Collection = () => {
   const [subCategory, setSubCategory] = useState([]);
   const [sortOption, setSortOption] = useState('relevant');
   const [showFilter, setShowFilter] = useState(false);
-
+  const {search}=useContext(ShopContext);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -59,6 +60,9 @@ const Collection = () => {
 
   const filterAndSortProducts = () => {
     let filtered = [...products];
+    if(products.length>0){
+      filtered = filtered.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+    }
 
     if (category.length > 0) {
       filtered = filtered.filter((item) => category.includes(item.category));
@@ -67,7 +71,7 @@ const Collection = () => {
     if (subCategory.length > 0) {
       filtered = filtered.filter((item) => subCategory.includes(item.subCategory));
     }
-
+    
     filtered = sortProducts(filtered);
     setFilterProduct(filtered);
   };
@@ -78,7 +82,7 @@ const Collection = () => {
 
   useEffect(() => {
     filterAndSortProducts();
-  }, [products, category, subCategory, sortOption]);
+  }, [products, category, subCategory,search,sortOption]);
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>

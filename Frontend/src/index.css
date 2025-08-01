@@ -12,3 +12,9 @@ a.active hr{
   }
 
 }
+
+*,
+*::before,
+*::after {
+  @apply dark:text-white dark:bg-slate-800;
+}

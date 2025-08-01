@@ -19,6 +19,7 @@ const SearchBar = () => {
 
   const handleInputChange = (e) => {
     setSearch(e.target.value);
+    console.log(e.target.value);
     navigate('/collection');
   };
 

@@ -85,7 +85,7 @@ const App = () => {
   // },[]);
   return (
     <div className='dark:text-white dark:bg-slate-800 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] min-h-screen'>
-      <ToastContainer />
+      <ToastContainer className='dark:text-white dark:bg-slate-800'/>
       <Suspense fallback={
         <div className="flex justify-center items-center h-screen">
           <Oval
