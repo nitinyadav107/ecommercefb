@@ -1,22 +1,26 @@
-
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Collection from './pages/Collection';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Product from './pages/Product';
-import Cart from './pages/Cart';
-import Login from './pages/Login';
-import PlaceOrder from './pages/PlaceOrder';
-import Order from './pages/Order';
-import Navbar from './components/Navbar';
-import SearchBar from './components/SearchBar';
-import { ToastContainer} from 'react-toastify';
+import { Oval } from 'react-loader-spinner';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import VerifyEmail from './pages/VerifyEmail';
+import SearchBar from './components/SearchBar';
+import { lazy, Suspense, useEffect } from 'react';
 import axios from 'axios';
-import { products } from './assets/assets';
-import { useEffect } from 'react';
+// import { products } from './assets/assets';
+const delayImport = (factory, ms = 0) =>
+  new Promise((resolve) => setTimeout(() => resolve(factory()), ms));
+
+// ✅ Lazy load all pages/components with delay
+const Home = lazy(() => delayImport(() => import('./pages/Home')));
+const About = lazy(() => delayImport(() => import('./pages/About')));
+const Product = lazy(() => delayImport(() => import('./pages/Product')));
+const Cart = lazy(() => delayImport(() => import('./pages/Cart')));
+const Login = lazy(() => delayImport(() => import('./pages/Login')));
+const PlaceOrder = lazy(() => delayImport(() => import('./pages/PlaceOrder')));
+const Order = lazy(() => delayImport(() => import('./pages/Order')));
+const VerifyEmail = lazy(() => delayImport(() => import('./pages/VerifyEmail')));
+const Navbar = lazy(() => delayImport(() => import('./components/Navbar')));
+const Contact = lazy(() => delayImport(() => import('./pages/Contact')));
+const Collection = lazy(() => delayImport(() => import('./pages/Collection')));
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const token = import.meta.env.VITE_TOKEN;
@@ -82,25 +86,39 @@ const App = () => {
   return (
     <div className='dark:text-white dark:bg-slate-800 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] min-h-screen'>
       <ToastContainer />
-      <Navbar />
-      <div className='block md:hidden'>
-        <SearchBar />
-      </div>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/collection' element={<Collection />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/product/:productId' element={<Product />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/place-order' element={<PlaceOrder />} />
-        <Route path='/order' element={<Order />} />
-       
-        <Route path='/verifyemail' element={<VerifyEmail />} />
-       
-        
-      </Routes>
+      <Suspense fallback={
+        <div className="flex justify-center items-center h-screen">
+          <Oval
+            height={60}
+            width={60}
+            color="#4fa94d"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#4fa94d"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+          />
+        </div>
+      }>
+        <Navbar />
+        <div className='block md:hidden'>
+          <SearchBar />
+        </div>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/collection' element={<Collection />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/product/:productId' element={<Product />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/place-order' element={<PlaceOrder />} />
+          <Route path='/order' element={<Order />} />
+          <Route path='/verifyemail' element={<VerifyEmail />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 };

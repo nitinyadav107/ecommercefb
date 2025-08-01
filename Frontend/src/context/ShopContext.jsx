@@ -20,6 +20,8 @@ export const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState('');
   const [verifyemail,setVerifyemail]=useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -115,24 +117,26 @@ export const ShopContextProvider = (props) => {
   };
   
 
-  const getProductData = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/api/product/list`);
-      if (response.data.success) {
-        setProducts(response.data.products);
-        console.log(response.data);
-      } else {
-        console.error(response.data);
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.error(error);
+  const getProductData = async (page = 1) => {
+  try {
+    const response = await axios.get(`${backendUrl}/api/product/list?page=${page}`);
+    if (response.data.success) {
+      setProducts(response.data.posts); // 'posts' contains the paginated data
+      setTotalPages(response.data.totalPages);
+      console.log(response.data);
+    } else {
+      console.error(response.data);
+      toast.error(response.data.message);
     }
-  };
-
-  useEffect(() => {
-    getProductData();
-  }, []);
+  } catch (error) {
+    console.error(error);
+    toast.error('Something went wrong while fetching products');
+  }
+};
+// Fetch products on component mount and when page changes
+useEffect(() => {
+  getProductData(currentPage);
+}, [currentPage]);
 
   useEffect(() => {
     if (!token && localStorage.getItem('token')) {

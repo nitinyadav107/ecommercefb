@@ -57,11 +57,21 @@ const addProduct = async (req, res) => {
 
 const listProduct = async (req, res) => {
     try {
+        const page=parseInt(req.query.page) || 1;
+        const perPage=8
         const products = await productModel.find({});
-        res.json({ success: true, products })
+        const totalPosts=products.length;
+        const totalPages=Math.ceil(totalPosts/perPage);
+        if(page>totalPages){
+            return res.json({success:false,message:"Page not found"})
+        }
+        const posts=await productModel.find({}).skip((page-1)*perPage).limit(perPage);
+
+        res.json({ success: true, posts,totalPosts,totalPages })
+
     } catch (error) {
-        console.log(err);
-        res.json({ success: false, message: err.message })
+        console.log(error);
+        res.json({ success: false, message: error.message })
 
     }
 
