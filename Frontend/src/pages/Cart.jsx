@@ -47,7 +47,7 @@ const Cart = () => {
                         type="number"
                         min={1}
                         max={100}
-                        className='ml-2 w-24 rounded px-2 py-1 dark:text-black'
+                        className='ml-2 w-24 rounded px-2 py-1 dark:text-white dark:bg-slate-700 dark:border-gray-600 '
                         defaultValue={item.quantity}
                       />
                     </label>
@@ -67,6 +67,7 @@ const Cart = () => {
           <p className='text-center text-lg dark:text-white'>Your cart is empty.</p>
         )}
       </div>
+      {cartData.length > 0?
       <div className='flex flex-col justify-end my-20 dark:text-white dark:bg-slate-800'>
         <div className='w-full sm:w-[450px] text-end dark:text-white dark:bg-slate-800'>
           <CartTotal />
@@ -75,6 +76,7 @@ const Cart = () => {
           <button className='bg-black text-white px-8 py-3 rounded-full dark:bg-gray-700 dark:text-white' onClick={() => navigate('/place-order')}>PROCEED TO CHECKOUT</button>
         </div>
       </div>
+      : null}
     </div>
   );
 };

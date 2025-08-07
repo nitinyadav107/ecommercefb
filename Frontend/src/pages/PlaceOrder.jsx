@@ -47,16 +47,16 @@ const PlaceOrder = () => {
       order_id: order.id,
       receipt: order.receipt,
       handler: async (response) => {
-        console.log(response+"handler");
+        console.log(response + "handler");
         try {
           const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
           if (data.success) {
-            console.log(data.success+"verify checker")
+            console.log(data.success + "verify checker")
             setCartItems({});
             toast.success(data.message);
             navigate('/order');
           }
-        
+
 
         }
         catch (error) {
@@ -169,7 +169,7 @@ const PlaceOrder = () => {
       <div className="flex flex-col lg:flex-row lg:space-x-10 w-full max-w-7xl px-4 sm:px-8">
         {/* Left Section: Delivery Information */}
         <div className="flex flex-col gap-6 w-full lg:w-3/5 p-6 bg-white rounded-lg shadow-md dark:bg-slate-700">
-          <div className="text-xl sm:text-2xl">
+          <div className="text-xl sm:text-2xl px-3">
             <Title text1={'Delivery'} text2={'Information'} />
           </div>
           <div className="flex gap-4">
@@ -197,27 +197,47 @@ const PlaceOrder = () => {
           <div>
             <CartTotal />
           </div>
-          <div>
-            <Title text1={'Payment'} text2={'Method'} />
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+          <div className="text-xl sm:text-2xl p-4">
+            <Title text1={'Payment'} text2={'Method'}/>
+            <div className="flex flex-col sm:flex-row gap-4 mt-4 ">
               {/* Stripe Payment Option */}
-              <div onClick={() => setMethod('stripe')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
-        ${method === "stripe" ? "bg-slate-300 border-slate-800 shadow-lg" : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600"}`}>
+              <div
+                onClick={() => setMethod("stripe")}
+                className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
+      ${method === "stripe"
+                    ? "bg-gray-300 text-black  shadow-lg dark:bg-gray-800 dark:border-white dark:text-white"
+                    : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400"
+                  }`}
+              >
                 <img src={assets.stripe_logo} alt="Stripe Logo" className="h-4 w-auto" />
               </div>
 
               {/* Razorpay Payment Option */}
-              <div onClick={() => setMethod('razorpay')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
-        ${method === "razorpay" ? "bg-slate-300 border-slate-800 shadow-lg" : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600"}`}>
+              <div
+                onClick={() => setMethod("razorpay")}
+                className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
+      ${method === "razorpay"
+                    ? "bg-gray-300 text-black border-gray-800 shadow-lg dark:bg-gray-800 dark:border-white dark:text-white"
+                    : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400"
+                  }`}
+              >
                 <img src={assets.razorpay_logo} alt="Razorpay Logo" className="h-4 w-auto" />
               </div>
 
               {/* Cash on Delivery Option */}
-              <div onClick={() => setMethod('cod')} className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
-        ${method === "cod" ? "bg-slate-300 text-black border-slate-800 shadow-lg" : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600"}`}>
+              <div
+                onClick={() => setMethod("cod")}
+                className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
+      ${method === "cod"
+                    ? "bg-gray-300 text-black border-gray-800 shadow-lg dark:bg-gray-800 dark:text-white dark:border-white"
+                    : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400"
+                  }`}
+              >
                 <p className="ml-2 font-semibold text-sm dark:text-white">Cash on Delivery</p>
               </div>
             </div>
+
+
             <div className="w-full text-end mt-8">
               <button type="submit" className="bg-black text-white px-16 py-3 text-sm hover:bg-gray-700 dark:bg-gray-600 hover:dark:bg-gray-800 dark:text-white">PLACE ORDER</button>
             </div>

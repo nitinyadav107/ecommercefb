@@ -58,7 +58,7 @@ const addProduct = async (req, res) => {
 const listProduct = async (req, res) => {
     try {
         const page=parseInt(req.query.page) || 1;
-        const perPage=8
+        const perPage=12;
         const products = await productModel.find({});
         const totalPosts=products.length;
         const totalPages=Math.ceil(totalPosts/perPage);
