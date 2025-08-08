@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
 import { sendOrderPlacedEmail } from "../middleware/Email.js";
+import crypto from 'crypto'
 
 //global variables
 const currency = "INR"
@@ -198,24 +199,29 @@ const placeOrderRazorpay = async (req, res) => {
 const verifyRazorpay = async (req, res) => {
 
   try {
-    const { userId, razorpay_order_id } = req.body;
-    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
-    console.log(orderInfo);
+    const { mongoOrderId,userId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const secret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (orderInfo.status === 'paid') {
-      await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
-      await userModel.findByIdAndUpdate(userId, { cartData: {} });
-      res.json({
-        success: true, message:
-          "Payment Successful"
-      })
-    } else {
-      
-      res.json({
-        success: false, message:
-          'Payment Failed'
-      })
+    // Generate signature using secret key
+    const generatedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+
+    // Check if generated signature matches Razorpay's signature
+    if (generatedSignature !== razorpay_signature) {
+      return res.status(400).json({ success: false, message: "Invalid Signature" });
     }
+
+
+    await orderModel.findByIdAndUpdate(mongoOrderId, { payment: true });
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+    res.json({
+      success: true, message:
+        "Payment Successful"
+    })
+
+
 
   }
 
@@ -225,6 +231,88 @@ const verifyRazorpay = async (req, res) => {
   }
 
 }
+
+
+//webhook verification razorpay
+const webhookHandler = async (req, res) => {
+  try {
+    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const signature = req.headers["x-razorpay-signature"];
+
+    // Raw body string for signature verification
+    const bodyString = JSON.stringify(req.body);
+
+    // Verify signature
+    const expectedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(bodyString)
+      .digest("hex");
+
+    if (signature !== expectedSignature) {
+      return res.status(400).json({ success: false, message: "Invalid webhook signature" });
+    }
+
+    const event = req.body.event;
+    const payload = req.body.payload;
+
+    let payment, razorpayOrderId, mongoOrderId;
+
+    // Extract Razorpay order_id from payload
+    if (payload.payment) {
+      payment = payload.payment.entity;
+      razorpayOrderId = payment.order_id;
+    } else if (payload.order) {
+      razorpayOrderId = payload.order.entity.id;
+    }
+
+    // Fetch Razorpay order to get MongoDB _id stored in receipt
+    const razorpayOrder = await razorpayInstance.orders.fetch(razorpayOrderId);
+    mongoOrderId = razorpayOrder.receipt; // ✅ MongoDB _id
+    console.log(razorpayOrderId, mongoOrderId);
+    // Handle different events
+    switch (event) {
+      case "payment.authorized":
+        await Order.findByIdAndUpdate(mongoOrderId, {
+          payment: true,
+         
+        });
+        console.log("✅ Payment authorized:", payment.id);
+        break;
+
+      case "payment.failed":
+        await Order.findByIdAndUpdate(mongoOrderId, {
+          payment: true,
+         
+        });
+        console.log("❌ Payment failed:", payment.id);
+        break;
+
+      case "payment.captured":
+      case "order.paid":
+        await Order.findByIdAndUpdate(mongoOrderId, {
+          payment: true, // ✅ Successful payment
+         
+        });
+        console.log("✅ Payment captured / Order paid:", razorpayOrderId);
+        break;
+
+      default:
+         await Order.findByIdAndUpdate(mongoOrderId, {
+          payment: true, // ✅ Successful payment
+         
+        });
+        console.log(`ℹ️ Webhook event ${event} received but not handled.`);
+    }
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("❌ Webhook error:", err);
+    res.status(500).json({ success: false });
+  }
+};
+
+
+
 //All orders data for admin panel
 const allOrders = async (req, res) => {
   try {
@@ -267,4 +355,4 @@ const updateStatus = async (req, res) => {
 
 }
 
-export { placeOrder, placeOrderStripe, placeOrderRazorpay, verifyRazorpay, allOrders, userOrders, updateStatus, verifyStripe }
+export { placeOrder, placeOrderStripe, placeOrderRazorpay, verifyRazorpay, allOrders, userOrders, updateStatus, verifyStripe, webhookHandler }

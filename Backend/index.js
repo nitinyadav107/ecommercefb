@@ -7,15 +7,18 @@ import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import { webhookHandler } from './controllers/orderController.js';
 
 
 //App Config
 
 const app = express();
-const port = process.env.PORT || 6000;
+
+
+const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
-
+app.post("/api/payment/webhook", express.raw({ type: "application/json" }), webhookHandler);
 //middleware
 app.use(express.json());
 app.use(cors());

@@ -48,22 +48,24 @@ const PlaceOrder = () => {
       receipt: order.receipt,
       handler: async (response) => {
         console.log(response + "handler");
-        try {
-          const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
-          if (data.success) {
-            console.log(data.success + "verify checker")
-            setCartItems({});
-            toast.success(data.message);
-            navigate('/order');
-          }
+        response.mongoOrderId = order.receipt;
+        // try {
+
+        //   const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
+        //   if (data.success) {
+        //     console.log(data.success + "verify checker")
+        //     setCartItems({});
+        //     toast.success(data.message);
+        //     navigate('/order');
+        //   }
 
 
-        }
-        catch (error) {
-          console.log(error);
-          toast.error(error);
+        // }
+        // catch (error) {
+        //   console.log(error);
+        //   toast.error(error);
 
-        }
+        // }
 
       },
     }
@@ -201,7 +203,7 @@ const PlaceOrder = () => {
             <Title text1={'Payment'} text2={'Method'}/>
             <div className="flex flex-col sm:flex-row gap-4 mt-4 ">
               {/* Stripe Payment Option */}
-              <div
+              {/* <div
                 onClick={() => setMethod("stripe")}
                 className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
       ${method === "stripe"
@@ -210,7 +212,7 @@ const PlaceOrder = () => {
                   }`}
               >
                 <img src={assets.stripe_logo} alt="Stripe Logo" className="h-4 w-auto" />
-              </div>
+              </div> */}
 
               {/* Razorpay Payment Option */}
               <div
