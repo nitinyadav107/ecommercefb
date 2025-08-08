@@ -49,23 +49,23 @@ const PlaceOrder = () => {
       handler: async (response) => {
         console.log(response + "handler");
         response.mongoOrderId = order.receipt;
-        // try {
+        try {
 
-        //   const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
-        //   if (data.success) {
-        //     console.log(data.success + "verify checker")
-        //     setCartItems({});
-        //     toast.success(data.message);
-        //     navigate('/order');
-        //   }
+          const { data } = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
+          if (data.success) {
+            console.log(data.success + "verify checker")
+            setCartItems({});
+            toast.success(data.message);
+            navigate('/order');
+          }
 
 
-        // }
-        // catch (error) {
-        //   console.log(error);
-        //   toast.error(error);
+        }
+        catch (error) {
+          console.log(error);
+          toast.error(error);
 
-        // }
+        }
 
       },
     }
