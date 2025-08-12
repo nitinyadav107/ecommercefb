@@ -8,6 +8,7 @@ import { sendVerificationEamil, senWelcomeEmail } from "../middleware/Email.js"
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET)
 }
+//help
 //Route for user login
 const loginUser = async (req, res) => {
   try {
