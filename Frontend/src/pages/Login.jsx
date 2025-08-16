@@ -17,7 +17,7 @@ const Login = () => {
     try {
       if (currentState === 'Sign Up') {
         console.log(currentState)
-        const response = await axios.post(backendUrl + '/api/user/register', { name, email, password });
+        const response = await axios.post(`${backendUrl}/api/user/register `, { name, email, password });
         console.log(response.data);
         if (response.data.success) {
           // setToken(response.data.token);
@@ -33,7 +33,7 @@ const Login = () => {
           console.log(response.data.message);
         }
       } else {
-        const response = await axios.post(backendUrl + '/api/user/login', { email, password });
+        const response = await axios.post(`${backendUrl}/api/user/login`, { email, password });
         if (response.data.success) {
           console.log(response.data);
           console.log(response.data.v)

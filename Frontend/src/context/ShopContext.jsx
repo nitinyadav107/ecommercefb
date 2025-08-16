@@ -133,7 +133,7 @@ export const ShopContextProvider = (props) => {
     toast.error('Something went wrong while fetching products');
   }
 };
-// Fetch products on component mount and when page changes
+
 useEffect(() => {
   getProductData(currentPage);
 }, [currentPage]);
@@ -147,6 +147,7 @@ useEffect(() => {
 
   const value = {
     products,
+    setProducts,
     currency,
     delivery_fee,
     search,
@@ -165,6 +166,12 @@ useEffect(() => {
     setToken,
     verifyemail,
     setVerifyemail
+    ,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    setTotalPages,
+    getProductData
   };
 
   return (

@@ -5,11 +5,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import SearchBar from './components/SearchBar';
 import { lazy, Suspense, useEffect } from 'react';
 import axios from 'axios';
-// import { products } from './assets/assets';
+import { products } from './assets/assets';
+
 const delayImport = (factory, ms = 0) =>
   new Promise((resolve) => setTimeout(() => resolve(factory()), ms));
 
-// ✅ Lazy load all pages/components with delay
+//Lazy load all pages/components with delay
 const Home = lazy(() => delayImport(() => import('./pages/Home')));
 const About = lazy(() => delayImport(() => import('./pages/About')));
 const Product = lazy(() => delayImport(() => import('./pages/Product')));
@@ -65,13 +66,11 @@ const uploadProducts = async (products) => {
         },
       });
 
-      console.log(`✅ Uploaded: ${product.name}`, response.data);
-
-      // Delay after each product upload (e.g. 2 seconds)
+      console.log(` Uploaded: ${product.name}`, response.data);
       await delay(3000);
 
     } catch (error) {
-      console.error(`❌ Error uploading ${product.name}:`, error.response?.data || error.message);
+      console.error(` Error uploading ${product.name}:`, error.response?.data || error.message);
     }
   }
 

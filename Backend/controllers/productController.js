@@ -56,26 +56,61 @@ const addProduct = async (req, res) => {
 //function for list product
 
 const listProduct = async (req, res) => {
-    try {
-        const page=parseInt(req.query.page) || 1;
-        const perPage=12;
-        const products = await productModel.find({});
-        const totalPosts=products.length;
-        const totalPages=Math.ceil(totalPosts/perPage);
-        if(page>totalPages){
-            return res.json({success:false,message:"Page not found"})
-        }
-        const posts=await productModel.find({}).skip((page-1)*perPage).limit(perPage);
+  try {
+    let page = parseInt(req.query.page) || 1;
+    const perPage = 16;
 
-        res.json({ success: true, posts,totalPosts,totalPages })
+    const search = req.query.search || "";
+    const category = req.query.category ? req.query.category.split(",") : [];
+    const subCategory = req.query.subCategory ? req.query.subCategory.split(",") : [];
+    const sortOption = req.query.sort || "relevant";
 
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-
+   
+    let filter = {};
+    if (search.trim()) {
+      filter.name = { $regex: search.trim(), $options: "i" }; 
+    }
+    if (category.length > 0 && category[0] !== "") {
+      filter.category = { $in: category };
+    }
+    if (subCategory.length > 0 && subCategory[0] !== "") {
+      filter.subCategory = { $in: subCategory };
     }
 
-}
+    // Build sort object
+    let sortQuery = {};
+    if (sortOption === "low-high") {
+      sortQuery.price = 1;
+    } else if (sortOption === "high-low") {
+      sortQuery.price = -1;
+    } else {
+      sortQuery.date = -1; 
+    }
+
+    // Total count for pagination
+    const totalPosts = await productModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalPosts / perPage);
+
+    if (page > totalPages && totalPages !== 0) {
+      page=1;
+    }
+
+    // Fetch filtered + sorted + paginated products
+    const posts = await productModel
+      .find(filter)
+      .sort(sortQuery)
+      .skip((page - 1) * perPage)
+      .limit(perPage);
+
+    res.json({ success: true, posts, totalPosts, totalPages });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+
 
 // function for removing product
 

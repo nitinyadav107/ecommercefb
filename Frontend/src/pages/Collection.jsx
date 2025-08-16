@@ -8,15 +8,13 @@ import { ShopContext } from '../context/ShopContext';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Collection = () => {
-  const [products, setProducts] = useState([]);
-  const [filterProduct, setFilterProduct] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [sortOption, setSortOption] = useState('relevant');
   const [showFilter, setShowFilter] = useState(false);
-  const {search}=useContext(ShopContext);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const { search ,products, setProducts, currentPage, setCurrentPage,totalPages,setTotalPages} = useContext(ShopContext);
+
+  
 
   const toggleCategory = (e) => {
     const value = e.target.value;
@@ -32,9 +30,17 @@ const Collection = () => {
     );
   };
 
-  const getProductData = async (page = 1) => {
+  const getProductData = async (page) => {
     try {
-      const response = await axios.get(`${backendUrl}/api/product/list?page=${page}`);
+      const queryParams = new URLSearchParams({
+        page,
+        search,
+        category: category.join(','),
+        subCategory: subCategory.join(','),
+        sort: sortOption
+      }).toString();
+
+      const response = await axios.get(`${backendUrl}/api/product/list?${queryParams}`);
       if (response.data.success) {
         setProducts(response.data.posts);
         setTotalPages(response.data.totalPages);
@@ -47,45 +53,11 @@ const Collection = () => {
     }
   };
 
-  const sortProducts = (items) => {
-    switch (sortOption) {
-      case 'low-high':
-        return [...items].sort((a, b) => a.price - b.price);
-      case 'high-low':
-        return [...items].sort((a, b) => b.price - a.price);
-      default:
-        return items;
-    }
-  };
-
-  const filterAndSortProducts = () => {
-    let filtered = [...products];
-    if(products.length>0){
-      filtered = filtered.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
-    }
-
-    if (category.length > 0) {
-      filtered = filtered.filter((item) => category.includes(item.category));
-    }
-
-    if (subCategory.length > 0) {
-      filtered = filtered.filter((item) => subCategory.includes(item.subCategory));
-    }
-    
-    filtered = sortProducts(filtered);
-    setFilterProduct(filtered);
-  };
-
   useEffect(() => {
     getProductData(currentPage);
-  }, [currentPage]);
-
-  useEffect(() => {
-    filterAndSortProducts();
-  }, [products, category, subCategory,search,sortOption]);
-
+  }, [currentPage, category, subCategory, search, sortOption,totalPages]);
   return (
-    <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>
+     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>
       <div className='min-w-60'>
         <p
           className='my-2 text-xl flex items-center cursor-pointer gap-2'
@@ -99,7 +71,7 @@ const Collection = () => {
           <p className='text-lg font-semibold'>Category</p>
           {['Men', 'Women', 'Kids'].map((item) => (
             <div key={item} className='flex items-center gap-2 mt-2'>
-              <input type="checkbox" value={item} onChange={toggleCategory} />
+              <input type="checkbox" value={item} onChange={toggleCategory} checked={category.includes(item)} />
               <p>{item}</p>
             </div>
           ))}
@@ -110,7 +82,7 @@ const Collection = () => {
           <p className='text-lg font-semibold'>Type</p>
           {['Topwear', 'Bottomwear', 'Winterwear'].map((item) => (
             <div key={item} className='flex items-center gap-2 mt-2'>
-              <input type="checkbox" value={item} onChange={toggleSubCategory} />
+              <input type="checkbox" value={item} onChange={toggleSubCategory} checked={subCategory.includes(item)} />
               <p>{item}</p>
             </div>
           ))}
@@ -123,6 +95,7 @@ const Collection = () => {
           <select
             className='border px-2 text-sm w-fit sm:w-auto mt-2 sm:mt-0'
             onChange={(e) => setSortOption(e.target.value)}
+            value={sortOption}
           >
             <option value="relevant">Sort by: Relevant</option>
             <option value="low-high">Sort by: Low to High</option>
@@ -131,10 +104,11 @@ const Collection = () => {
         </div>
 
         <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
-          {filterProduct.map((item, index) => (
+          {products.map((item, index) => (
             <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
           ))}
         </div>
+
 
         {/* Pagination */}
         <div className="flex justify-center mt-12 mb-12 gap-2">
