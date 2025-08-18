@@ -219,11 +219,11 @@ const PlaceOrder = () => {
                 onClick={() => setMethod("razorpay")}
                 className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
       ${method === "razorpay"
-                    ? "bg-gray-300 text-black border-gray-800 shadow-lg dark:bg-gray-800 dark:border-white dark:text-white"
-                    : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400"
+                    ? "bg-gray-300 text-black border-gray-800 shadow-lg dark:bg-slate-600 dark:border-white dark:text-white"
+                    : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400 dark:bg-slate-600"
                   }`}
               >
-                <img src={assets.razorpay_logo} alt="Razorpay Logo" className="h-4 w-auto" />
+                <img src={assets.razorpay_logo} alt="Razorpay Logo" className="h-4 w-auto dark:bg-slate-600 " />
               </div>
 
               {/* Cash on Delivery Option */}
@@ -231,17 +231,17 @@ const PlaceOrder = () => {
                 onClick={() => setMethod("cod")}
                 className={`flex items-center justify-center w-full sm:w-auto p-4 border rounded-lg shadow-md cursor-pointer transition duration-150 ease-in-out 
       ${method === "cod"
-                    ? "bg-gray-300 text-black border-gray-800 shadow-lg dark:bg-gray-800 dark:text-white dark:border-white"
-                    : "border-gray-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400"
+                    ? "bg-slate-300 text-black border-slate-800 shadow-lg dark:bg-slate-600 dark:text-white dark:border-white"
+                    : "border-slate-200 hover:border-blue-500 hover:shadow-lg dark:border-slate-600 dark:hover:border-blue-400 dark:bg-slate-600"
                   }`}
               >
-                <p className="ml-2 font-semibold text-sm dark:text-white">Cash on Delivery</p>
+                <p className="ml-2 font-semibold text-sm dark:text-white dark:bg-slate-600 ">Cash on Delivery</p>
               </div>
             </div>
 
 
             <div className="w-full text-end mt-8">
-              <button type="submit" className="bg-black text-white px-16 py-3 text-sm hover:bg-gray-700 dark:bg-gray-600 hover:dark:bg-gray-800 dark:text-white">PLACE ORDER</button>
+              <button type="submit" className="bg-black text-white px-16 py-3 text-sm hover:bg-slate-700 dark:bg-gray-600 hover:dark:bg-slate-700 dark:border-slate-600 dark:hover:border-blue-400 dark:text-white dark:border-w-6 ">PLACE ORDER</button>
             </div>
           </div>
         </div>
