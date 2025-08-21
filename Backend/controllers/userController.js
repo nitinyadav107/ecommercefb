@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import validator from "validator";
 import userModel from "../models/userModel.js";
 import { sendVerificationEamil, senWelcomeEmail } from "../middleware/Email.js"
+import axios from "axios"
+import oauth2Client from '../config/googleClient.js'
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET)
@@ -20,7 +22,9 @@ const loginUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });
     }
-
+    if(!user.password){
+      return res.status(400).json({ message: "Account is created through google please login via google" });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -28,11 +32,11 @@ const loginUser = async (req, res) => {
     }
     else {
       const token = createToken(user._id);
-      const v= user.isVerified;
-      if(v===false){
+      const v = user.isVerified;
+      if (v === false) {
         await sendVerificationEamil(user.email, user.verficationToken)
       }
-      res.json({ success: true, token , v});
+      res.json({ success: true, token, v });
     }
 
 
@@ -143,5 +147,40 @@ const adminLogin = async (req, res) => {
 
 }
 
+const googleAuth = async (req, res) => {
+  try {
+    const { code } = req.query;
+    const googleRes = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(googleRes.tokens);
+    const userRes = await axios.get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+    );
+    const { email, name, picture } = userRes.data;
+    // console.log(userRes);
+    let user = await userModel.findOne({ email });
 
-export { loginUser, registerUser, adminLogin, VerfiyEmail };
+    if (!user) {
+      user = await userModel.create({
+        name,
+        email,
+        image: picture,
+      });
+    }
+    const { _id } = user;
+    const token = jwt.sign({ _id, email },
+      process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.status(200).json({
+      success: true,
+      token,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Internal Server Error"
+    })
+  }
+}
+
+export { loginUser, registerUser, adminLogin, VerfiyEmail, googleAuth };

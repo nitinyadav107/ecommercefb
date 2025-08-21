@@ -16,7 +16,7 @@ const app = express();
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, 
-  max: 5, 
+  max: 10, 
   handler: (req, res) => {
     return res.status(429).json({
       success: false,
@@ -36,7 +36,7 @@ app.use(cors());
 
 //api endpoint
 
-app.use('/api/user' ,limiter,userRouter);
+app.use('/api/user' ,userRouter);
 app.use('/api/product',productRouter);
 app.use('/api/cart',cartRouter);
 app.use('/api/order',orderRouter)
