@@ -167,7 +167,7 @@ const googleAuth = async (req, res) => {
         isVerified: true
       });
     }
-    const { _id } = user;
+    const { _id } = user._id;
     const token = createToken(_id);
     res.status(200).json({
       success: true,
