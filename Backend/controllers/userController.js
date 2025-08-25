@@ -164,13 +164,11 @@ const googleAuth = async (req, res) => {
         name,
         email,
         image: picture,
+        isVerified: true
       });
     }
     const { _id } = user;
-    const token = jwt.sign({ _id, email },
-      process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = createToken(_id);
     res.status(200).json({
       success: true,
       token,
