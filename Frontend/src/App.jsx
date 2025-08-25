@@ -7,6 +7,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import axios from 'axios';
 import { products } from './assets/assets';
 import NotFound from './pages/NotFound';
+import ForgetPassword from './pages/ForgetPassword';
 
 const delayImport = (factory, ms = 0) =>
   new Promise((resolve) => setTimeout(() => resolve(factory()), ms));
@@ -118,6 +119,7 @@ const App = () => {
           <Route path='/order' element={<Order />} />
           <Route path='/verifyemail' element={<VerifyEmail />} />
           <Route path='*' element={<NotFound />} />
+          <Route path='/forgetpassword' element={<ForgetPassword />} />
         </Routes>
       </Suspense>
     </div>

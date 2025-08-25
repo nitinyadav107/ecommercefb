@@ -267,7 +267,7 @@ const webhookHandler = async (req, res) => {
 
     // Fetch Razorpay order to get MongoDB _id stored in receipt
     const razorpayOrder = await razorpayInstance.orders.fetch(razorpayOrderId);
-    mongoOrderId = razorpayOrder.receipt; // ✅ MongoDB _id
+    mongoOrderId = razorpayOrder.receipt; //MongoDB _id
     console.log(razorpayOrderId, mongoOrderId);
     // Handle different events
     switch (event) {

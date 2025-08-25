@@ -106,7 +106,7 @@ const VerfiyEmail = async (req, res) => {
       return res.status(400).json({ success: false, message: "User not found" })
     }
     if (user.verficationToken !== code || user.verficationTokenExpiresAt < Date.now()) {
-      return res.status(400).json({ success: false, message: "Inavlid or Expired Code" })
+      return res.status(400).json({ success: false, message: "Invalid or Expired Code" })
     }
 
     user.isVerified = true;

@@ -124,7 +124,7 @@ const LoginForm = () => {
       />
 
       <div className='w-full flex justify-between text-sm mt-2 dark:text-white'>
-        <p className='cursor-pointer'>Forgot Your Password?</p>
+        <p className='cursor-pointer' onClick={() => navigate('/forgetpassword')}>Forgot Your Password?</p>
         {currentState === 'Login' ? (
           <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer'>Create Account</p>
         ) : (

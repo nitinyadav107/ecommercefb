@@ -139,10 +139,22 @@ const singleProduct = async (req, res) => {
     }
 
 }
+const listProductAdmin = async (req, res) => {
+    try {
+        const products = await productModel.find({});
+        res.json({ success: true, products })
+    } catch (error) {
+        console.log(err);
+        res.json({ success: false, message: err.message })
+
+    }
+
+}
 
 export {
     addProduct,
     listProduct,
     removeProduct,
-    singleProduct
+    singleProduct,
+    listProductAdmin
 }
