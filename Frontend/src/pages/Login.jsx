@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import { useRef } from 'react';
 
 const LoginForm = () => {
   const [currentState, setCurrentState] = useState('Login');
@@ -13,6 +14,13 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const inputRef = useRef();
+  useEffect(() => {
+    inputRef.current.focus();
+
+  }, []);
+
+
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -109,6 +117,7 @@ const LoginForm = () => {
       <input
         onChange={(e) => setEmail(e.target.value)}
         value={email}
+        ref={inputRef}
         required
         type="email"
         className='w-full px-3 py-2 border border-gray-800 dark:border-white dark:bg-slate-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'

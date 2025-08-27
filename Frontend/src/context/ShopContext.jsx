@@ -19,9 +19,12 @@ export const ShopContextProvider = (props) => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState('');
-  const [verifyemail,setVerifyemail]=useState(false);
+  const [verifyemail, setVerifyemail] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [addresses, setAddresses] = useState([]);
+
+  
 
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -101,7 +104,7 @@ export const ShopContextProvider = (props) => {
     for (const productId in cartItems) {
       const itemInfo = products.find((product) => product._id === productId);
       if (!itemInfo) continue; // Skip if product not found
-  
+
       for (const size in cartItems[productId]) {
         try {
           const quantity = cartItems[productId][size];
@@ -115,28 +118,28 @@ export const ShopContextProvider = (props) => {
     }
     return totalAmount;
   };
-  
+
 
   const getProductData = async (page = 1) => {
-  try {
-    const response = await axios.get(`${backendUrl}/api/product/list?page=${page}`);
-    if (response.data.success) {
-      setProducts(response.data.posts); // 'posts' contains the paginated data
-      setTotalPages(response.data.totalPages);
-      console.log(response.data);
-    } else {
-      console.error(response.data);
-      toast.error(response.data.message);
+    try {
+      const response = await axios.get(`${backendUrl}/api/product/list?page=${page}`);
+      if (response.data.success) {
+        setProducts(response.data.posts); // 'posts' contains the paginated data
+        setTotalPages(response.data.totalPages);
+        console.log(response.data);
+      } else {
+        console.error(response.data);
+        // toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      // toast.error('Something went wrong while fetching products');
     }
-  } catch (error) {
-    console.error(error);
-    toast.error('Something went wrong while fetching products');
-  }
-};
+  };
 
-useEffect(() => {
-  getProductData(currentPage);
-}, [currentPage]);
+  useEffect(() => {
+    getProductData(currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     if (!token && localStorage.getItem('token')) {
@@ -171,7 +174,9 @@ useEffect(() => {
     setCurrentPage,
     totalPages,
     setTotalPages,
-    getProductData
+    getProductData,
+    addresses,
+    setAddresses
   };
 
   return (

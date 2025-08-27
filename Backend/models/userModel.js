@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     // required: true
   },
-  image:{
+  image: {
     type: String
   },
   cartData: {
@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  address: { type: Array, default: [] },
   resetPasswordToken: String,
   resetPasswordExpiresAt: Date,
   verficationToken: String,

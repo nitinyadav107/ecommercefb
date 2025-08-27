@@ -5,6 +5,7 @@ import connectDB from './config/mongodb.js';
 import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
+import addressRouter from './routes/addressRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import { webhookHandler } from './controllers/orderController.js';
@@ -15,7 +16,7 @@ import rateLimit from 'express-rate-limit';
 const app = express();
 
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, 
+  windowMs: 1 * 60 * 1000, // 1minute
   max: 10, 
   handler: (req, res) => {
     return res.status(429).json({
@@ -36,10 +37,11 @@ app.use(cors());
 
 //api endpoint
 
-app.use('/api/user' ,userRouter);
+app.use('/api/user' ,limiter,userRouter);
 app.use('/api/product',productRouter);
 app.use('/api/cart',cartRouter);
 app.use('/api/order',orderRouter)
+app.use('/api/address',addressRouter);
 
 app.get('/', (req, res) => {
     res.status(200).send('Hello World')
