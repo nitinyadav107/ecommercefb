@@ -47,6 +47,11 @@ const Footer = () => {
           Contact Us
         </a>
       </li>
+       <li>
+        <a href="https://ecommercefb-admin.onrender.com" className="font-bold text-gray-400  hover:text-gray-900">
+          Admin Panel
+        </a>
+      </li>
     </ul>
   </div>
 
