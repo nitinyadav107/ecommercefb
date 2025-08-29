@@ -12,9 +12,9 @@ const Collection = () => {
   const [subCategory, setSubCategory] = useState([]);
   const [sortOption, setSortOption] = useState('relevant');
   const [showFilter, setShowFilter] = useState(false);
-  const { search ,products, setProducts, currentPage, setCurrentPage,totalPages,setTotalPages} = useContext(ShopContext);
+  const { search, products, setProducts, currentPage, setCurrentPage, totalPages, setTotalPages,searchGet} = useContext(ShopContext);
 
-  
+
 
   const toggleCategory = (e) => {
     const value = e.target.value;
@@ -47,17 +47,19 @@ const Collection = () => {
       } else {
         toast.error(response.data.message);
       }
+      console.log(search);
     } catch (error) {
       console.error(error);
       toast.error('Error fetching products');
     }
   };
+  
 
   useEffect(() => {
     getProductData(currentPage);
-  }, [currentPage, category, subCategory, search, sortOption,totalPages]);
+  }, [currentPage, category, subCategory, sortOption,search, totalPages,searchGet]);
   return (
-     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>
+    <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>
       <div className='min-w-60'>
         <p
           className='my-2 text-xl flex items-center cursor-pointer gap-2'
@@ -112,41 +114,40 @@ const Collection = () => {
 
         {/* Pagination */}
         <div className="flex justify-center mt-12 mb-12 gap-2">
-  {/* Previous Button */}
-  <button
-    disabled={currentPage === 1}
-    onClick={() => setCurrentPage((prev) => prev - 1)}
-    className="px-3 py-1 border rounded disabled:opacity-50"
-  >
-    Prev
-  </button>
+          {/* Previous Button */}
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
 
-  {/* Dynamic Page Buttons */}
-  {[...Array(4)].map((_, idx) => {
-    const pageNum = currentPage + idx;
-    if (pageNum > totalPages) return null; // Don't render if exceeding total pages
-    return (
-      <button
-        key={pageNum}
-        onClick={() => setCurrentPage(pageNum)}
-        className={`px-3 py-1 border rounded ${
-          currentPage === pageNum ? 'bg-black text-white' : ''
-        }`}
-      >
-        {pageNum}
-      </button>
-    );
-  })}
+          {/* Dynamic Page Buttons */}
+          {[...Array(4)].map((_, idx) => {
+            const pageNum = currentPage + idx;
+            if (pageNum > totalPages) return null; // Don't render if exceeding total pages
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`px-3 py-1 border rounded ${currentPage === pageNum ? 'bg-black text-white' : ''
+                  }`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
 
-  {/* Next Button */}
-  <button
-    disabled={currentPage + 1 > totalPages}
-    onClick={() => setCurrentPage((prev) => prev + 1)}
-    className="px-3 py-1 border rounded disabled:opacity-50"
-  >
-    Next
-  </button>
-</div>
+          {/* Next Button */}
+          <button
+            disabled={currentPage + 1 > totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
 
       </div>
     </div>

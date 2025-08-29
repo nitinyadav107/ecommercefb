@@ -18,3 +18,13 @@ a.active hr{
 *::after {
   @apply dark:text-white dark:bg-slate-800;
 }
+
+/* apne index.css ya global.css me */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

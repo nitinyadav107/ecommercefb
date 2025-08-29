@@ -23,6 +23,7 @@ export const ShopContextProvider = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [addresses, setAddresses] = useState([]);
+  const [searchGet,setSearchGet] = useState(false);
 
   
 
@@ -176,7 +177,9 @@ export const ShopContextProvider = (props) => {
     setTotalPages,
     getProductData,
     addresses,
-    setAddresses
+    setAddresses,
+    searchGet,
+    setSearchGet
   };
 
   return (
