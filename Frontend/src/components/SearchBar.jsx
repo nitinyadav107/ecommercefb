@@ -64,7 +64,7 @@ const SearchBar = () => {
   const callCollection = () => {
     if (searchtext.trim() === '') return;
     setSearch(searchtext);
-    setShowSearch(false);
+    // setShowSearch(false);
 
     setSearchSuggestions([]);
     navigate('/collection');
@@ -73,6 +73,7 @@ const SearchBar = () => {
 
 
   const handleBlur = () => {
+    setShowSearch(false);
     setTimeout(() => setSearchSuggestions([]), 120);
   };
 
