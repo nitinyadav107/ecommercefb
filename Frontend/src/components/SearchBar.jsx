@@ -116,6 +116,7 @@ const SearchBar = () => {
                   onMouseDown={() => {
                     setSearch(item.name);
                     setSearchtext('');
+                    navigate('/collection');
                   }}
                 >
                   {item.name}
