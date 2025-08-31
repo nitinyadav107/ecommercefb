@@ -8,7 +8,7 @@ import { useRef } from 'react';
 
 const LoginForm = () => {
   const [currentState, setCurrentState] = useState('Login');
-  const { token, setToken, backendUrl, verifyemail, setVerifyemail } = useContext(ShopContext);
+  const { token, setToken, backendUrl, verifyemail, setVerifyemail,setIsGoogleLogin} = useContext(ShopContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +38,7 @@ const LoginForm = () => {
       } else {
         const response = await axios.post(`${backendUrl}/api/user/login`, { email, password });
         if (response.data.success) {
+          console.log(response.data);
           if (response.data.v === false) {
             setVerifyemail(true);
             navigate('/verifyemail');
@@ -73,6 +74,7 @@ const LoginForm = () => {
 
         localStorage.setItem("user-info", JSON.stringify(obj));
         setToken(token);
+        setIsGoogleLogin(true);
         localStorage.setItem("token", token);
         navigate("/");
         toast.success("Logged in with Google!");

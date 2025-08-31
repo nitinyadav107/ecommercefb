@@ -9,7 +9,9 @@ import { IoSearchOutline } from "react-icons/io5";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const { showSearch, setShowSearch, getCartCount, navigate, token, setToken, setVerifyemail, setCartItems} = useContext(ShopContext);
+  const { showSearch, setShowSearch, getCartCount, navigate, token, setToken, setVerifyemail, setCartItems,isGoogleLogin} = useContext(ShopContext);
+  const localStorageData= JSON.parse(localStorage.getItem('user-info'));
+  
 
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [sticky, setSticky] = useState(false);
@@ -46,8 +48,6 @@ const Navbar = () => {
       <Link to='/' className='w-36 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold cursor-pointer text-gray-700 dark:text-white' alt="Logo">
         LIBAS
       </Link>
-
-
 
 
       <ul className='hidden sm:flex gap-5 text-sm text-gray-700 dark:text-white dark:bg-slate-800 '>
@@ -114,11 +114,13 @@ const Navbar = () => {
         </label>
 
         <div className='group relative dark:text-white dark:bg-slate-800 z-10'>
-
-          <CgProfile size={30} onClick={() => token ? null : navigate('/login')} />
+          {
+            isGoogleLogin?<img src={localStorageData.image} alt="user" className="w-10 h-10 rounded-full" />:<CgProfile size={30} onClick={() => token ? null : navigate('/login')} />
+          }
+         
           {token && <div className='absolute hidden group-hover:block bg-white right-0 pt-4 dark:text-white dark:bg-slate-800'>
             <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded dark:text-white dark:bg-slate-800'>
-              <p className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>My Profile</p>
+              <p className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>Profile</p>
               <p onClick={() => navigate('/order')} className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>Orders</p>
               
               <p onClick={() => logout()} className='cursor-pointer hover:text-black dark:text-white dark:bg-slate-800'>Logout</p>
