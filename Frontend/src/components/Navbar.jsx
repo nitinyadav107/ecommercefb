@@ -9,7 +9,7 @@ import { IoSearchOutline } from "react-icons/io5";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const { showSearch, setShowSearch, getCartCount, navigate, token, setToken, setVerifyemail, setCartItems } = useContext(ShopContext);
+  const { showSearch, setShowSearch, getCartCount, navigate, token, setToken, setVerifyemail, setCartItems} = useContext(ShopContext);
 
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [sticky, setSticky] = useState(false);
@@ -76,7 +76,7 @@ const Navbar = () => {
       <div className='flex items-center gap-6 dark:text-white dark:bg-slate-800'>
         {!showSearch && (
 
-          <IoSearchOutline size={30} onClick={() => setShowSearch(true)} />
+          <IoSearchOutline size={30}  onClick={() => {setShowSearch(true)}} />
 
         )}
        

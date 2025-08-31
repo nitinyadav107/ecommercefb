@@ -9,6 +9,7 @@ import { products } from './assets/assets';
 import NotFound from './pages/NotFound';
 import ForgetPassword from './pages/ForgetPassword';
 
+
 const delayImport = (factory, ms = 0) =>
   new Promise((resolve) => setTimeout(() => resolve(factory()), ms));
 

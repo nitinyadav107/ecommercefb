@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
+import { useRef } from 'react';
 
 
 export const ShopContext = createContext();
@@ -24,7 +25,8 @@ export const ShopContextProvider = (props) => {
   const [totalPages, setTotalPages] = useState(1);
   const [addresses, setAddresses] = useState([]);
   const [searchGet,setSearchGet] = useState(false);
-
+ 
+  
   
 
   const addToCart = async (itemId, size) => {
@@ -179,7 +181,8 @@ export const ShopContextProvider = (props) => {
     addresses,
     setAddresses,
     searchGet,
-    setSearchGet
+    setSearchGet,
+  
   };
 
   return (

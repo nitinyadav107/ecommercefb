@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import ProductItem from '../components/ProductItem';
 import Title from '../components/Title';
 import { ShopContext } from '../context/ShopContext';
+import { useRef } from 'react';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,7 +13,8 @@ const Collection = () => {
   const [subCategory, setSubCategory] = useState([]);
   const [sortOption, setSortOption] = useState('relevant');
   const [showFilter, setShowFilter] = useState(false);
-  const { search, products, setProducts, currentPage, setCurrentPage, totalPages, setTotalPages,searchGet} = useContext(ShopContext);
+  const { search, products, setProducts, currentPage, setCurrentPage, totalPages, setTotalPages, searchGet } = useContext(ShopContext);
+  
 
 
 
@@ -53,11 +55,11 @@ const Collection = () => {
       toast.error('Error fetching products');
     }
   };
-  
+
 
   useEffect(() => {
     getProductData(currentPage);
-  }, [currentPage, category, subCategory, sortOption,search, totalPages,searchGet]);
+  }, [currentPage, category, subCategory, sortOption, search, totalPages, searchGet]);
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>
       <div className='min-w-60'>
@@ -106,9 +108,16 @@ const Collection = () => {
         </div>
 
         <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
-          {products.map((item, index) => (
-            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-          ))}
+          {products.length > 0 ? (
+            products.map((item, index) => (
+              <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+            ))
+          ) : (
+            <div className='text-center text-lg flex items-center justify-center'>
+              <svg className='w-12 h-12 text-red-600 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+              <p className='text-red-600'>No products found.</p>
+            </div>
+          )}
         </div>
 
 

@@ -4,6 +4,7 @@ import { assets } from '../assets/assets';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useRef } from 'react';
 
 const SearchBar = () => {
   const { search, setSearch, showSearch, setShowSearch, backendUrl } = useContext(ShopContext);
@@ -12,6 +13,19 @@ const SearchBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchtext, setSearchtext] = useState('');
+  const searchOnFocus = useRef(null);
+
+  useEffect(() => {
+    if (showSearch) {
+      setTimeout(() => {
+        searchOnFocus.current?.focus();
+      }, 0);
+    }
+  }, [showSearch]);
+
+
+
+
 
   const searchSuggestionsResult = async () => {
     if (!backendUrl) return;
@@ -44,7 +58,7 @@ const SearchBar = () => {
       } else {
         setSearchSuggestions([]);
       }
-    }, 500);
+    }, 400);
     return () => clearTimeout(timeout);
   }, [searchtext]);
 
@@ -82,7 +96,7 @@ const SearchBar = () => {
       <div className="flex items-center justify-center p-6 md:p-0">
         <div className='relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl'>
           {/* Input */}
-          <input
+          <input ref={searchOnFocus}
             onFocus={() => {
 
               if (searchtext.trim() !== '') searchSuggestionsResult();
