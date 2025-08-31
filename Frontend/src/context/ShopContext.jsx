@@ -26,7 +26,7 @@ export const ShopContextProvider = (props) => {
   const [addresses, setAddresses] = useState([]);
   const [searchGet, setSearchGet] = useState(false);
   const intervalRef = useRef(null);
-  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
+  
 
 
 
@@ -200,8 +200,7 @@ export const ShopContextProvider = (props) => {
     setAddresses,
     searchGet,
     setSearchGet,
-    isGoogleLogin,
-    setIsGoogleLogin
+  
 
   };
 

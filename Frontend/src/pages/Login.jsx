@@ -8,7 +8,7 @@ import { useRef } from 'react';
 
 const LoginForm = () => {
   const [currentState, setCurrentState] = useState('Login');
-  const { token, setToken, backendUrl, verifyemail, setVerifyemail,setIsGoogleLogin} = useContext(ShopContext);
+  const { token, setToken, backendUrl, verifyemail, setVerifyemail} = useContext(ShopContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -74,7 +74,6 @@ const LoginForm = () => {
 
         localStorage.setItem("user-info", JSON.stringify(obj));
         setToken(token);
-        setIsGoogleLogin(true);
         localStorage.setItem("token", token);
         navigate("/");
         toast.success("Logged in with Google!");

@@ -9,7 +9,7 @@ import { IoSearchOutline } from "react-icons/io5";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const { showSearch, setShowSearch, getCartCount, navigate, token, setToken, setVerifyemail, setCartItems, isGoogleLogin } = useContext(ShopContext);
+  const { showSearch, setShowSearch, getCartCount, navigate, token, setToken, setVerifyemail, setCartItems } = useContext(ShopContext);
   const localStorageData = JSON.parse(localStorage.getItem('user-info'));
 
 
@@ -115,7 +115,7 @@ const Navbar = () => {
 
         <div className='group relative dark:text-white dark:bg-slate-800 z-10'>
           {
-            isGoogleLogin ? <div className="w-12 h-12 rounded-full overflow-hidden">
+            localStorageData ? <div className="w-8 h-8 rounded-full overflow-hidden">
               <img
                 src={localStorageData?.image}
                 alt="user"
