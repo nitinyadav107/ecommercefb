@@ -33,8 +33,8 @@ const BestSeller = () => {
           }
         </div>:<div className='flex items-center justify-center'>
           <Oval
-            height={80}
-            width={80}
+            height={40}
+            width={40}
             color="#4fa94d"
             wrapperStyle={{}}
             wrapperClass="spinner-border text-primary"

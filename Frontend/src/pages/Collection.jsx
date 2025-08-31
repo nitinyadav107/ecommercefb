@@ -5,6 +5,7 @@ import ProductItem from '../components/ProductItem';
 import Title from '../components/Title';
 import { ShopContext } from '../context/ShopContext';
 import { useRef } from 'react';
+import { Oval } from 'react-loader-spinner';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -33,7 +34,7 @@ const Collection = () => {
   };
 
   const cacheRef = useRef(new Map());
-   const CACHE_EXPIRY = 5 * 60 * 1000; 
+  const CACHE_EXPIRY = 5 * 60 * 1000;
 
   const getProductData = async (page) => {
     try {
@@ -65,7 +66,7 @@ const Collection = () => {
         setProducts(response.data.posts);
         setTotalPages(response.data.totalPages);
 
-         cacheRef.current.set(queryParams, {
+        cacheRef.current.set(queryParams, {
           posts: response.data.posts,
           totalPages: response.data.totalPages,
           timestamp: Date.now()
@@ -74,10 +75,10 @@ const Collection = () => {
       } else {
         toast.error(response.data.message);
       }
-      
+
     } catch (error) {
       console.error(error);
-      toast.error('Error fetching products');
+      // toast.error('Error fetching products');
     }
   };
 
@@ -131,19 +132,30 @@ const Collection = () => {
             <option value="high-low">Sort by: High to Low</option>
           </select>
         </div>
-
-        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
-          {products.length > 0 ? (
-            products.map((item, index) => (
-              <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-            ))
-          ) : (
-            <div className='text-center text-lg flex items-center justify-center'>
-              <svg className='w-12 h-12 text-red-600 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-              <p className='text-red-600'>No products found.</p>
-            </div>
-          )}
-        </div>
+        {products.length > 0 ?
+          <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
+            {products.length > 0 ? (
+              products.map((item, index) => (
+                <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+              ))
+            ) : (
+              null
+            )}
+          </div> : <div className='flex items-center justify-center'>
+            <Oval
+              height={40}
+              width={40}
+              color="#4fa94d"
+              wrapperStyle={{}}
+              wrapperClass="spinner-border text-primary"
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#FFFFFF"
+              strokeWidth={2}
+              strokeWidthSecondary={2}
+            />
+          </div>
+        }
 
 
         {/* Pagination */}
