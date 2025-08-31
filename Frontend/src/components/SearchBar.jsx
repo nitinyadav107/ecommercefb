@@ -132,7 +132,7 @@ const SearchBar = () => {
           <img
             src={assets.search_icon}
             alt="search"
-            className='absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50 dark:opacity-75'
+            className='absolute dark:bg-slate-700 right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50 dark:opacity-75'
           />
 
           {/* Suggestion Box */}
