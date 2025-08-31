@@ -14,6 +14,7 @@ const SearchBar = () => {
   const navigate = useNavigate();
   const [searchtext, setSearchtext] = useState('');
   const searchOnFocus = useRef(null);
+  const [apiData, setApiData] = useState([]);
 
   useEffect(() => {
     if (showSearch) {
@@ -23,30 +24,44 @@ const SearchBar = () => {
     }
   }, [showSearch]);
 
-
-
-
+  const cache = useRef(new Map());
 
   const searchSuggestionsResult = async () => {
-    if (!backendUrl) return;
-    try {
+  
+    if (!backendUrl || !searchtext?.trim()) {
+      setSearchSuggestions([]);
+      return;
+    }
 
+    if (cache.current.has(searchtext)) {
+      setSearchSuggestions(cache.current.get(searchtext));
+      return;
+    }
+
+    try {
       const queryParams = new URLSearchParams({
         page: 1,
         search: searchtext,
       }).toString();
 
       const response = await axios.get(`${backendUrl}/api/product/list?${queryParams}`);
+
       if (response?.data?.success) {
-        setSearchSuggestions(response.data.posts || []);
+        const result = response.data.posts || [];
+        setSearchSuggestions(result);
+
+        cache.current.set(searchtext, result);
+
+        setTimeout(() => cache.current.delete(searchtext), 5 * 60 * 1000);
       } else {
         setSearchSuggestions([]);
-        toast.error(response?.data?.message || 'No suggestions');
+        toast.error(response?.data?.message || "No suggestions");
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error(error);
       setSearchSuggestions([]);
-      toast.error('Error fetching suggestions');
+      toast.error("Error fetching suggestions");
     }
   };
 

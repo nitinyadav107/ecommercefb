@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
 import Title from './Title';
 import ProductItem from './ProductItem';
+import { Oval } from 'react-loader-spinner';
 
 const LatestCollection = () => {
   const { products } = useContext(ShopContext);
@@ -23,19 +24,35 @@ const LatestCollection = () => {
         </p>
       </div>
       {/* Rendering products */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-        {
-          latestProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              id={item._id}
-              image={item.image}
-              name={item.name}
-              price={item.price}
+      {
+        latestProducts.length > 0 ?
+          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+            {
+              latestProducts.map((item, index) => (
+                <ProductItem
+                  key={index}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  price={item.price}
+                />
+              ))
+            }
+          </div> : <div className='flex items-center justify-center'>
+            <Oval
+              height={80}
+              width={80}
+              color="#4fa94d"
+              wrapperStyle={{}}
+              wrapperClass="spinner-border text-primary"
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#FFFFFF"
+              strokeWidth={2}
+              strokeWidthSecondary={2}
             />
-          ))
-        }
-      </div>
+          </div>
+      }
     </div>
   );
 }

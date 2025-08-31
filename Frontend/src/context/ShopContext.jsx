@@ -24,10 +24,11 @@ export const ShopContextProvider = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [addresses, setAddresses] = useState([]);
-  const [searchGet,setSearchGet] = useState(false);
- 
-  
-  
+  const [searchGet, setSearchGet] = useState(false);
+  const intervalRef = useRef(null);
+
+
+
 
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -127,22 +128,38 @@ export const ShopContextProvider = (props) => {
     try {
       const response = await axios.get(`${backendUrl}/api/product/list?page=${page}`);
       if (response.data.success) {
-        setProducts(response.data.posts); // 'posts' contains the paginated data
+        setProducts(response.data.posts);
         setTotalPages(response.data.totalPages);
         console.log(response.data);
+
+        if (response.data.posts.length > 0) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+
+        }
+
       } else {
         console.error(response.data);
-        // toast.error(response.data.message);
+
       }
     } catch (error) {
       console.error(error);
-      // toast.error('Something went wrong while fetching products');
+
     }
   };
 
   useEffect(() => {
-    getProductData(currentPage);
-  }, [currentPage]);
+  
+    getProductData(1);
+
+    if (!intervalRef.current) {
+      intervalRef.current = setInterval(() => {
+        getProductData(1);
+      }, 5000);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, []);
 
   useEffect(() => {
     if (!token && localStorage.getItem('token')) {
@@ -182,7 +199,7 @@ export const ShopContextProvider = (props) => {
     setAddresses,
     searchGet,
     setSearchGet,
-  
+
   };
 
   return (

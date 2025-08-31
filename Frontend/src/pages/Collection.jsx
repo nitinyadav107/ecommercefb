@@ -14,7 +14,7 @@ const Collection = () => {
   const [sortOption, setSortOption] = useState('relevant');
   const [showFilter, setShowFilter] = useState(false);
   const { search, products, setProducts, currentPage, setCurrentPage, totalPages, setTotalPages, searchGet } = useContext(ShopContext);
-  
+
 
 
 
@@ -32,6 +32,9 @@ const Collection = () => {
     );
   };
 
+  const cacheRef = useRef(new Map());
+   const CACHE_EXPIRY = 5 * 60 * 1000; 
+
   const getProductData = async (page) => {
     try {
       const queryParams = new URLSearchParams({
@@ -42,14 +45,36 @@ const Collection = () => {
         sort: sortOption
       }).toString();
 
+      if (cacheRef.current.has(queryParams)) {
+        const cachedData = cacheRef.current.get(queryParams);
+        const isExpired = Date.now() - cachedData.timestamp > CACHE_EXPIRY;
+
+        if (!isExpired) {
+          console.log("Cache hit ", queryParams);
+          setProducts(cachedData.posts);
+          setTotalPages(cachedData.totalPages);
+          return;
+        } else {
+          console.log("Cache expired", queryParams);
+          cacheRef.current.delete(queryParams);
+        }
+      }
+
       const response = await axios.get(`${backendUrl}/api/product/list?${queryParams}`);
       if (response.data.success) {
         setProducts(response.data.posts);
         setTotalPages(response.data.totalPages);
+
+         cacheRef.current.set(queryParams, {
+          posts: response.data.posts,
+          totalPages: response.data.totalPages,
+          timestamp: Date.now()
+        });
+
       } else {
         toast.error(response.data.message);
       }
-      console.log(search);
+      
     } catch (error) {
       console.error(error);
       toast.error('Error fetching products');
@@ -59,7 +84,7 @@ const Collection = () => {
 
   useEffect(() => {
     getProductData(currentPage);
-  }, [currentPage, category, subCategory, sortOption, search, totalPages, searchGet]);
+  }, [currentPage, category, subCategory, sortOption, search, searchGet]);
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t dark:text-white dark:bg-slate-800'>
       <div className='min-w-60'>
