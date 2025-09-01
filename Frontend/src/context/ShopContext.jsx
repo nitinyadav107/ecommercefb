@@ -150,9 +150,6 @@ export const ShopContextProvider = (props) => {
   };
 
   useEffect(() => {
-
-    getProductData(1);
-
     if (!intervalRef.current) {
       intervalRef.current = setInterval(() => {
         getProductData(1);

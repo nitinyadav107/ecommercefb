@@ -15,6 +15,7 @@ const Collection = () => {
   const [sortOption, setSortOption] = useState('relevant');
   const [showFilter, setShowFilter] = useState(false);
   const { search, products, setProducts, currentPage, setCurrentPage, totalPages, setTotalPages, searchGet } = useContext(ShopContext);
+  const intervalRef = useRef(null);
 
 
 
@@ -71,16 +72,22 @@ const Collection = () => {
           totalPages: response.data.totalPages,
           timestamp: Date.now()
         });
-
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       } else {
         toast.error(response.data.message);
       }
 
     } catch (error) {
       console.error(error);
-      // toast.error('Error fetching products');
+      
     }
   };
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      getProductData(currentPage);
+    }, 5000);
+  }, []);
 
 
   useEffect(() => {
