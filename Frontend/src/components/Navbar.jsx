@@ -76,7 +76,7 @@ const Navbar = () => {
       <div className='flex items-center gap-6 dark:text-white dark:bg-slate-800'>
         {!showSearch && (
 
-          <IoSearchOutline size={30} onClick={() => { setShowSearch(true) }} />
+          <IoSearchOutline size={window.innerWidth > 1024 ? 30 : window.innerWidth > 768 ? 35 : 40} onClick={() => { setShowSearch(true) }} />
 
         )}
 
