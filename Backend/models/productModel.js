@@ -1,9 +1,11 @@
 import mongoose from "mongoose"
+import { text } from "stream/consumers";
 
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        text: true
     },
     description: {
         type: String,
